@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quivr API Streaming Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            color: #3498db;
+            margin-top: 30px;
+        }
+        
+        .config-section {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .radio-group {
+            margin-bottom: 15px;
+        }
+        
+        .radio-group label {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 15px;
+            font-weight: normal;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .response-wrapper {
+            margin-top: 30px;
+        }
+        
+        .response {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 100px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            overflow-wrap: break-word;
+        }
+        
+        .error {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .loading {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .success {
+            color: #27ae60;
+        }
+        
+        .chat-bubble {
+            padding: 10px 15px;
+            border-radius: 18px;
+            margin-bottom: 10px;
+            max-width: 80%;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            background-color: #3498db;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .assistant-message {
+            background-color: #f1f1f1;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }
+        
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #fff;
+        }
+        
+        .typing-indicator {
+            display: inline-block;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #999;
+            border-radius: 50%;
+            margin: 0 1px;
+            animation: typing 1.4s infinite both;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Quivr API Streaming Demo</h1>
+    
+    <div class="config-section">
+        <h2>Configuration</h2>
+        <div class="input-group">
+            <label for="api-url">API URL:</label>
+            <input type="text" id="api-url" value="https://sb.esfl.io/api" placeholder="https://your-quivr-instance.com">
+        </div>
+        
+        <div class="input-group">
+            <label for="api-key">API Key:</label>
+            <input type="text" id="api-key" placeholder="Your API Key">
+        </div>
+        
+        <div class="input-group">
+            <label for="brain-id">Brain ID:</label>
+            <input type="text" id="brain-id" placeholder="Your Brain ID">
+        </div>
+    </div>
+    
+    <h2>Chat Interface</h2>
+    
+    <div id="chat-container">
+        <!-- Chat messages will appear here -->
+    </div>
+    
+    <div class="input-group">
+        <label for="question-input">Your question:</label>
+        <input type="text" id="question-input" placeholder="Ask something...">
+    </div>
+    
+    <div class="radio-group">
+        <label>
+            <input type="radio" name="stream-method" value="fetch" checked>
+            Use Fetch API
+        </label>
+        <label>
+            <input type="radio" name="stream-method" value="eventsource">
+            Use EventSource-like approach
+        </label>
+    </div>
+    
+    <button id="submit-button">Ask Question</button>
+    
+    <div class="response-wrapper">
+        <h3>Raw Response:</h3>
+        <div id="response-container" class="response">
+            <!-- The raw response will appear here -->
+        </div>
+    </div>
+    
+    <script>
+        // Store the chat ID once created
+        let currentChatId = null;
+        
+        // Function to get configuration values
+        function getConfig() {
+            return {
+                apiUrl: document.getElementById('api-url').value.trim(),
+                apiKey: document.getElementById('api-key').value.trim(),
+                brainId: document.getElementById('brain-id').value.trim()
+            };
+        }
+        
+        // Function to validate configuration
+        function validateConfig(config) {
+            if (!config.apiUrl) {
+                alert('Please enter the API URL');
+                return false;
+            }
+            if (!config.apiKey) {
+                alert('Please enter your API Key');
+                return false;
+            }
+            if (!config.brainId) {
+                alert('Please enter your Brain ID');
+                return false;
+            }
+            return true;
+        }
+        
+        // Function to create headers
+        function createHeaders(apiKey) {
+            return {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json"
+            };
+        }
+        
+        // Function to create a chat
+        async function createChat(config) {
+            try {
+                const response = await fetch(`${config.apiUrl}/chat`, {
+                    method: 'POST',
+                    headers: createHeaders(config.apiKey),
+                    body: JSON.stringify({
+                        name: "Web UI Streaming Chat",
+                        brain_id: config.brainId
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Error creating chat: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log("Chat created successfully:", data);
+                return data.chat_id;
+            } catch (error) {
+                console.error("Failed to create chat:", error);
+                throw error;
+            }
+        }
+        
+        // Function to add a message to the chat container
+        function addMessageToChat(message, isUser = false) {
+            const chatContainer = document.getElementById('chat-container');
+            const messageElement = document.createElement('div');
+            messageElement.className = `chat-bubble ${isUser ? 'user-message' : 'assistant-message'}`;
+            messageElement.textContent = message;
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Function to add a typing indicator
+        function addTypingIndicator() {
+            const chatContainer = document.getElementById('chat-container');
+            const indicatorElement = document.createElement('div');
+            indicatorElement.className = 'chat-bubble assistant-message typing-indicator-container';
+            indicatorElement.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+            indicatorElement.id = 'typing-indicator';
+            chatContainer.appendChild(indicatorElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Function to remove the typing indicator
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+        
+        // Function to stream with Fetch API
+        async function streamWithFetch(config, chatId, question) {
+            try {
+                // Add typing indicator
+                addTypingIndicator();
+                
+                // Make the streaming request
+                const response = await fetch(`${config.apiUrl}/chat/${chatId}/question/stream?brain_id=${config.brainId}`, {
+                    method: 'POST',
+                    headers: createHeaders(config.apiKey),
+                    body: JSON.stringify({ question }),
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} ${response.statusText}`);
+                }
+                
+                // Get the reader from the response body stream
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let result = '';
+                
+                // Create a container for the streaming response
+                const responseContainer = document.getElementById('response-container');
+                responseContainer.innerHTML = '';
+                
+                // Remove typing indicator and prepare for real message
+                removeTypingIndicator();
+                const messageElement = document.createElement('div');
+                messageElement.className = 'chat-bubble assistant-message';
+                messageElement.id = 'streaming-message';
+                document.getElementById('chat-container').appendChild(messageElement);
+                
+                // Function to process the stream chunks
+                async function processStream() {
+                    try {
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            
+                            if (done) {
+                                console.log("Stream complete");
+                                break;
+                            }
+                            
+                            // Decode the chunk and append to result
+                            const chunk = decoder.decode(value, { stream: true });
+                            result += chunk;
+                            
+                            // Update the UI with the latest chunk
+                            responseContainer.textContent = result;
+                            document.getElementById('streaming-message').textContent = result;
+                            document.getElementById('chat-container').scrollTop = document.getElementById('chat-container').scrollHeight;
+                        }
+                    } catch (error) {
+                        console.error("Error reading stream:", error);
+                        responseContainer.innerHTML += `<div class="error">Error: ${error.message}</div>`;
+                        removeTypingIndicator();
+                        addMessageToChat(`Error: ${error.message}`, false);
+                    }
+                }
+                
+                // Start processing the stream
+                await processStream();
+                return result;
+            } catch (error) {
+                console.error("Stream request failed:", error);
+                document.getElementById('response-container').innerHTML = 
+                    `<div class="error">Error: ${error.message}</div>`;
+                removeTypingIndicator();
+                addMessageToChat(`Error: ${error.message}`, false);
+                throw error;
+            }
+        }
+        
+        // Function to stream with EventSource-like approach
+        function streamWithEventSource(config, chatId, question) {
+            return new Promise((resolve, reject) => {
+                // Add typing indicator
+                addTypingIndicator();
+                
+                // First, we need to create the URL with query parameters
+                const url = new URL(`${config.apiUrl}/chat/${chatId}/question/stream`);
+                url.searchParams.append('brain_id', config.brainId);
+                
+                // Create a container for the streaming response
+                const responseContainer = document.getElementById('response-container');
+                responseContainer.innerHTML = '';
+                
+                let result = '';
+                
+                // Make the request with fetch and process it as an event stream
+                fetch(url, {
+                    method: 'POST',
+                    headers: createHeaders(config.apiKey),
+                    body: JSON.stringify({ question }),
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.status} ${response.statusText}`);
+                    }
+                    
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    
+                    // Remove typing indicator and prepare for real message
+                    removeTypingIndicator();
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'chat-bubble assistant-message';
+                    messageElement.id = 'streaming-message';
+                    document.getElementById('chat-container').appendChild(messageElement);
+                    
+                    function read() {
+                        reader.read().then(({ done, value }) => {
+                            if (done) {
+                                console.log("Stream complete");
+                                resolve(result);
+                                return;
+                            }
+                            
+                            const chunk = decoder.decode(value, { stream: true });
+                            result += chunk;
+                            
+                            // Update the UI with the latest chunk
+                            responseContainer.textContent = result;
+                            document.getElementById('streaming-message').textContent = result;
+                            document.getElementById('chat-container').scrollTop = document.getElementById('chat-container').scrollHeight;
+                            
+                            // Continue reading
+                            read();
+                        }).catch(error => {
+                            console.error("Error reading stream:", error);
+                            responseContainer.innerHTML += `<div class="error">Error: ${error.message}</div>`;
+                            removeTypingIndicator();
+                            addMessageToChat(`Error: ${error.message}`, false);
+                            reject(error);
+                        });
+                    }
+                    
+                    read();
+                }).catch(error => {
+                    console.error("Stream request failed:", error);
+                    responseContainer.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                    removeTypingIndicator();
+                    addMessageToChat(`Error: ${error.message}`, false);
+                    reject(error);
+                });
+            });
+        }
+        
+        // Main function to handle the chat
+        async function handleChat() {
+            try {
+                // Get and validate configuration
+                const config = getConfig();
+                if (!validateConfig(config)) {
+                    return;
+                }
+                
+                // Get the question
+                const questionInput = document.getElementById('question-input');
+                const question = questionInput.value.trim();
+                if (!question) {
+                    alert("Please enter a question");
+                    return;
+                }
+                
+                // Add the user's question to the chat
+                addMessageToChat(question, true);
+                
+                // Clear the input field
+                questionInput.value = '';
+                
+                // Create a chat if we don't have one yet
+                if (!currentChatId) {
+                    currentChatId = await createChat(config);
+                }
+                
+                // Get the selected streaming method
+                const streamMethod = document.querySelector('input[name="stream-method"]:checked').value;
+                
+                // Use the selected streaming method
+                if (streamMethod === 'fetch') {
+                    await streamWithFetch(config, currentChatId, question);
+                } else {
+                    await streamWithEventSource(config, currentChatId, question);
+                }
+            } catch (error) {
+                console.error("Chat handling failed:", error);
+                addMessageToChat(`Error: ${error.message}`, false);
+            }
+        }
+        
+        // Add event listener to the button
+        document.getElementById('submit-button').addEventListener('click', handleChat);
+        
+        // Add event listener for Enter key in the input field
+        document.getElementById('question-input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                handleChat();
+            }
+        });
+        
+        // Initialize with a welcome message
+        document.addEventListener('DOMContentLoaded', () => {
+            addMessageToChat("Welcome to the Quivr API Streaming Demo! Enter your API credentials and ask a question to get started.", false);
+        });
+    </script>
+</body>
+</html>

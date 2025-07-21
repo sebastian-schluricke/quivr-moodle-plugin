@@ -17,16 +17,16 @@ require_capability('mod/mybrainchat:view', $context);
 
 $instance = $DB->get_record('mybrainchat', ['id' => $cm->instance], '*', MUST_EXIST);
 $brainid = $instance->brainid;
+$apikey = $instance->apikey;
 
-// Hardcoded API Key (nur lokal! später über FastAPI!)
-$API_KEY = '21c74e428a866db65146ea85c354e6b6';
+// API URL for quivr backend
 $API_URL = 'https://api.quivr.esfl.io';
 
 // Step 1: Create chat
 $chat = curl_post_json("$API_URL/chat", [
-    'name' => 'Moodle Chat',
+    'name'     => 'Moodle Chat',
     'brain_id' => $brainid
-], $API_KEY);
+], $apikey);
 
 if (!isset($chat['chat_id'])) {
     http_response_code(500);
@@ -37,9 +37,11 @@ if (!isset($chat['chat_id'])) {
 $chatid = $chat['chat_id'];
 
 // Step 2: Ask question (non-streaming response expected here)
-$reply = curl_post_json("$API_URL/chat/$chatid/question/stream?brain_id=$brainid", [
-    'question' => $question
-], $API_KEY);
+$reply = curl_post_json(
+    "$API_URL/chat/$chatid/question/stream?brain_id=$brainid",
+    ['question' => $question],
+    $apikey
+);
 
 echo json_encode(['answer' => $reply['fullMessage'] ?? 'No response.']);
 
@@ -47,10 +49,24 @@ echo json_encode(['answer' => $reply['fullMessage'] ?? 'No response.']);
 // Helper function to POST JSON using Moodle's curl
 function curl_post_json($url, $data, $apikey) {
     $curl = new curl();
+
+    // Build the header lines
     $headers = [
         "Authorization: Bearer $apikey",
-        "Content-Type: application/json"
+        "Content-Type: application/json",
     ];
-    $response = $curl->post_json($url, $data, $headers);
+
+    // Use string keys for curl options
+    $options = [
+        'CURLOPT_HTTPHEADER' => $headers,
+    ];
+
+    // JSON-encode the payload
+    $json_data = json_encode($data);
+
+    // Send the request with JSON body and options
+    $response = $curl->post($url, $json_data, $options);
+
     return json_decode($response, true);
 }
+

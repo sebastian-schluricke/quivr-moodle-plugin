@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../hugo_moodle_github/hugo/.idea/hugo.iml" filepath="$PROJECT_DIR$/../hugo_moodle_github/hugo/.idea/hugo.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/quivr-moodle-plugin.iml" filepath="$PROJECT_DIR$/.idea/quivr-moodle-plugin.iml" />
     </modules>
   </component>
