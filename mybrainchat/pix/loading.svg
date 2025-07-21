@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <circle cx="256" cy="256" r="256" fill="#f5f5f5"/>
+  <g transform="rotate(0 256 256)">
+    <path fill="#3a5795" d="M256 64c-17.7 0-32 14.3-32 32v64c0 17.7 14.3 32 32 32s32-14.3 32-32V96c0-17.7-14.3-32-32-32z">
+      <animateTransform attributeName="transform" type="rotate" from="0 256 256" to="360 256 256" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <path fill="#3a5795" opacity="0.9" d="M351 111c-12.5-12.5-32.8-12.5-45.3 0l-45.3 45.3c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l45.3-45.3c12.5-12.5 12.5-32.8 0-45.3z">
+      <animateTransform attributeName="transform" type="rotate" from="0 256 256" to="360 256 256" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <path fill="#3a5795" opacity="0.8" d="M416 256c0-17.7-14.3-32-32-32h-64c-17.7 0-32 14.3-32 32s14.3 32 32 32h64c17.7 0 32-14.3 32-32z">
+      <animateTransform attributeName="transform" type="rotate" from="0 256 256" to="360 256 256" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <path fill="#3a5795" opacity="0.7" d="M351 401c12.5-12.5 12.5-32.8 0-45.3l-45.3-45.3c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l45.3 45.3c12.5 12.5 32.8 12.5 45.3 0z">
+      <animateTransform attributeName="transform" type="rotate" from="0 256 256" to="360 256 256" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <path fill="#3a5795" opacity="0.6" d="M256 448c17.7 0 32-14.3 32-32v-64c0-17.7-14.3-32-32-32s-32 14.3-32 32v64c0 17.7 14.3 32 32 32z">
+      <animateTransform attributeName="transform" type="rotate" from="0 256 256" to="360 256 256" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <path fill="#3a5795" opacity="0.5" d="M161 401c12.5 12.5 32.8 12.5 45.3 0l45.3-45.3c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-45.3 45.3c-12.5 12.5-12.5 32.8 0 45.3z">
+      <animateTransform attributeName="transform" type="rotate" from="0 256 256" to="360 256 256" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <path fill="#3a5795" opacity="0.4" d="M96 256c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32s-14.3-32-32-32h-64c-17.7 0-32 14.3-32 32z">
+      <animateTransform attributeName="transform" type="rotate" from="0 256 256" to="360 256 256" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <path fill="#3a5795" opacity="0.3" d="M161 111c-12.5 12.5-12.5 32.8 0 45.3l45.3 45.3c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L206.3 111c-12.5-12.5-32.8-12.5-45.3 0z">
+      <animateTransform attributeName="transform" type="rotate" from="0 256 256" to="360 256 256" dur="1s" repeatCount="indefinite"/>
+    </path>
+  </g>
+</svg>
