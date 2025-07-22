@@ -1,0 +1,177 @@
+/**
+ * Styles for the popup chat button and modal dialog
+ */
+
+/* Chat button that appears on all course pages */
+.mybrainchat-button-container {
+    position: fixed;
+    bottom: 27px;
+    right: 70px;
+    z-index: 1000;
+}
+
+.mybrainchat-open-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0f6cbf;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.mybrainchat-open-button:hover {
+    background-color: #0d5ca3;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.mybrainchat-open-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mybrainchat-open-button i {
+    margin-right: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .mybrainchat-open-button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+/* When in popup mode, adjust the chat container */
+body.mybrainchat-popup {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body.mybrainchat-popup #page {
+    padding: 0;
+    margin: 0;
+}
+
+body.mybrainchat-popup #page-header,
+body.mybrainchat-popup #page-footer,
+body.mybrainchat-popup .navbar,
+body.mybrainchat-popup #nav-drawer {
+    display: none;
+}
+
+body.mybrainchat-popup .background-container {
+    height: 100vh;
+    width: 100vw;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+body.mybrainchat-popup .chat-container {
+    height: 100vh;
+    max-height: none;
+    border-radius: 0;
+}
+
+body.mybrainchat-popup .chat-history {
+    height: calc(100vh - 140px);
+}
+
+/* Modal dialog styles */
+.mybrainchat-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    animation: mybrainchat-fade-in 0.3s ease;
+}
+
+.mybrainchat-modal-overlay.active {
+    display: flex;
+}
+
+.mybrainchat-modal-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 80%;
+    max-width: 800px;
+    height: 80%;
+    max-height: 600px;
+    overflow: hidden;
+    position: relative;
+    animation: mybrainchat-slide-in 0.3s ease;
+}
+
+.mybrainchat-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+    z-index: 10;
+}
+
+.mybrainchat-modal-close:hover {
+    color: #333;
+}
+
+.mybrainchat-modal-content {
+    width: 100%;
+    height: 100%;
+    border: none;
+    overflow: hidden;
+}
+
+/* Animations */
+@keyframes mybrainchat-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes mybrainchat-slide-in {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes mybrainchat-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes mybrainchat-slide-out {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-50px); opacity: 0; }
+}
+
+.mybrainchat-modal-overlay.closing {
+    animation: mybrainchat-fade-out 0.3s ease forwards;
+}
+
+.mybrainchat-modal-overlay.closing .mybrainchat-modal-container {
+    animation: mybrainchat-slide-out 0.3s ease forwards;
+}
+
+/* Responsive adjustments for modal */
+@media (max-width: 768px) {
+    .mybrainchat-modal-container {
+        width: 95%;
+        height: 90%;
+    }
+}
