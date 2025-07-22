@@ -27,12 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Brain Chat Activity';
 $string['privacy:metadata'] = 'Brain Chat Activity does not store any personal data';
-$string['modulename'] = 'Quivr Chat';
-$string['modulenameplural'] = 'Quivr Chats';
-$string['modulename_help'] = 'This module lets students chat with a teacher-specific Quivr brain.';
+$string['modulename'] = 'Frag Hugo!';
+$string['modulenameplural'] = 'Frag Hugo!';
+$string['modulename_help'] = 'This module lets students chat with a teacher-specific brain.';
 $string['mybrainchatname'] = 'Chat title';
 $string['mybrainchatname_help'] = 'The name of this chat activity.';
-$string['pluginadministration'] = 'Quivr Chat administration';
-$string['pluginname'] = 'Quivr Chat';
+$string['pluginadministration'] = 'Frag Hugo! administration';
+$string['pluginname'] = 'Frag Hugo!';
 $string['view'] = 'View chat';
-$string['mybrainchat:view'] = 'View the Quivr Chat activity';
+$string['mybrainchat:view'] = 'View the Frag Hugo! activity';

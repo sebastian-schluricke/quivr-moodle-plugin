@@ -95,3 +95,114 @@ function mybrainchat_delete_instance($id) {
 
     return true;
 }
+
+/**
+ * Add required CSS files before the HTML head is printed.
+ *
+ * This function is called before the standard HTML head is output.
+ */
+function mod_mybrainchat_before_standard_html_head() {
+    global $PAGE, $COURSE;
+
+    // Only add CSS on course pages
+    if ($PAGE->context->contextlevel != CONTEXT_COURSE && $PAGE->context->contextlevel != CONTEXT_MODULE) {
+        return;
+    }
+
+    // Get the course ID
+    $courseid = ($PAGE->context->contextlevel == CONTEXT_COURSE) ? $PAGE->context->instanceid : $COURSE->id;
+    
+    // Skip if we're not in a real course (e.g., site home)
+    if ($courseid <= 1) {
+        return;
+    }
+
+    // Check if there are any mybrainchat instances in this course
+    $modinfo = get_fast_modinfo($COURSE);
+    $hasmybrainchat = false;
+
+    if (isset($modinfo->instances['mybrainchat'])) {
+        foreach ($modinfo->instances['mybrainchat'] as $cm) {
+            if ($cm->uservisible) {
+                $hasmybrainchat = true;
+                break;
+            }
+        }
+    }
+
+    // Only add CSS if there are mybrainchat instances in this course
+    if (!$hasmybrainchat) {
+        return;
+    }
+
+    // Add the required CSS - this must be done before the head is printed
+    $PAGE->requires->css(new moodle_url('/mod/mybrainchat/styles/popup-chat.css'));
+}
+
+/**
+ * Inject the chat button into course pages.
+ *
+ * This function is called before the page footer is output.
+ */
+function mybrainchat_before_footer() {
+    global $PAGE, $COURSE, $DB;
+
+    // Only show the chat button on course pages
+    if ($PAGE->context->contextlevel != CONTEXT_COURSE && $PAGE->context->contextlevel != CONTEXT_MODULE) {
+        return;
+    }
+
+    // Don't show the button if we're in popup mode
+    // Note: $PAGE->bodyclasses can be either an array or a string depending on the context
+    // We need to check both types to avoid the error: "in_array(): Argument #2 ($haystack) must be of type array, string given"
+    if ($PAGE->pagelayout === 'popup' || 
+        (is_array($PAGE->bodyclasses) && in_array('mybrainchat-popup', $PAGE->bodyclasses)) || 
+        (is_string($PAGE->bodyclasses) && strpos($PAGE->bodyclasses, 'mybrainchat-popup') !== false)) {
+        return;
+    }
+
+    // Get the course ID
+    $courseid = ($PAGE->context->contextlevel == CONTEXT_COURSE) ? $PAGE->context->instanceid : $COURSE->id;
+    
+    // Skip if we're not in a real course (e.g., site home)
+    if ($courseid <= 1) {
+        return;
+    }
+
+    // Check if there are any mybrainchat instances in this course
+    $modinfo = get_fast_modinfo($COURSE);
+    $hasmybrainchat = false;
+
+    if (isset($modinfo->instances['mybrainchat'])) {
+        foreach ($modinfo->instances['mybrainchat'] as $cm) {
+            if ($cm->uservisible) {
+                $hasmybrainchat = true;
+                break;
+            }
+        }
+    }
+
+    // Only show the button if there are mybrainchat instances in this course
+    if (!$hasmybrainchat) {
+        return;
+    }
+
+    // Add the required JavaScript - this can be done before the footer
+    $PAGE->requires->js(new moodle_url('/mod/mybrainchat/js/popup-chat.js'));
+
+    // Output the chat button HTML
+    echo '<div class="mybrainchat-button-container">';
+    echo '<button id="mybrainchat-open-button" class="mybrainchat-open-button">';
+    echo '<i class="fa fa-comments"></i> Frag Hugo';
+    echo '</button>';
+    echo '</div>';
+
+    // Initialize the popup chat JavaScript
+    echo '<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof MyBrainChatPopup !== "undefined" && typeof MyBrainChatPopup.init === "function") {
+                MyBrainChatPopup.init(' . $courseid . ');
+            }
+        });
+    </script>';
+}

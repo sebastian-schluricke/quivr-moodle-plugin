@@ -2,10 +2,25 @@
  * Hugo-style CSS for mybrainchat plugin
  */
 
+/* Main heading (Quivr Chat / Frag Hugo) */
+#region-main > h2, 
+body.mybrainchat-popup > #page > #page-content > #region-main-box > #region-main > h2,
+body.mybrainchat-popup > div[role="main"] > h2,
+div[role="main"] > h2 {
+  padding-left: 1rem;
+  padding-top: 1rem;
+}
+
+/* Ensure the intro-text h2 inside chat-header is not affected */
+.chat-header .intro-text {
+  padding-left: 0;
+  padding-top: 0;
+}
+
 /* Main container */
 .background-container {
   position: relative;
-  min-height: 600px;
+  /*min-height: 600px;*/
   background-color: #f5f5f5;
   background-size: cover;
   background-position: center;
@@ -102,6 +117,9 @@
   padding: 15px;
   background-color: white;
   border-top: 1px solid #ddd;
+  min-height: 50px;
+  flex-shrink: 0; /* Prevent container from shrinking during resize */
+  position: relative; /* Added for absolute positioning of child elements */
 }
 
 .chat-input-wrapper {
@@ -142,7 +160,12 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  line-height: 1;
   transition: background-color 0.3s;
+}
+
+.chat-send-btn img {
+  transform: translateX(-2px); /* ggf. auch -2px je nach Icon */
 }
 
 .chat-send-btn:hover {
@@ -150,11 +173,20 @@
 }
 
 .input-counter {
-  text-align: right;
+  position: absolute;
+  text-align: center;
   font-size: 0.8rem;
   color: #777;
-  margin-top: 5px;
-  padding-right: 10px;
+  right: 15px; /* Align with the right padding of container */
+  top: 55px; /* Position below the send button (15px padding + 40px button height) */
+  width: 40px; /* Same width as the send button */
+}
+
+/* Responsive adjustments for the input counter */
+@media (max-width: 768px) {
+  .input-counter {
+    right: 10px; /* Adjust for smaller padding on mobile */
+  }
 }
 
 /* Confirmation dialog */

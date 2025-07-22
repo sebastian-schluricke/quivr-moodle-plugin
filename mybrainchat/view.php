@@ -3,6 +3,7 @@ require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID
+$popup = optional_param('popup', 0, PARAM_INT); // Is this being loaded in a popup?
 
 $cm = get_coursemodule_from_id('mybrainchat', $id, 0, false, MUST_EXIST);
 $course = get_course($cm->course);
@@ -33,6 +34,13 @@ $apikey = $instance->apikey; // Wird aktuell nicht im Frontend verwendet
 $PAGE->requires->css(new moodle_url('/mod/mybrainchat/styles/hugo-style.css'));
 $PAGE->requires->js(new moodle_url('/mod/mybrainchat/js/hugo-script.js'));
 
+// Add popup-specific adjustments if in popup mode
+// Note: popup-chat.css is now loaded via mod_mybrainchat_before_standard_html_head() for all pages
+if ($popup) {
+    $PAGE->add_body_class('mybrainchat-popup');
+    $PAGE->set_pagelayout('popup');
+}
+
 // Output start
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($instance->name));
@@ -44,9 +52,6 @@ echo <<<HTML
   <div class="chat-container">
     <div class="chat-header">
       <h2 id="intro-text" class="intro-text">Verbindung zum Brain wird hergestellt...</h2>
-      <div class="chat-controls">
-        <button id="open_confirm_box" class="chat-close-btn">{$OUTPUT->pix_icon('i/close', 'Close')}</button>
-      </div>
     </div>
     
     <div id="chat_history" class="chat-history">
@@ -57,20 +62,9 @@ echo <<<HTML
       <div class="chat-input-wrapper">
         <img id="hugo-avatar" src="{$CFG->wwwroot}/mod/mybrainchat/pix/avatar.svg" class="chat-avatar" alt="Avatar">
         <input type="text" id="chat_input" class="chat-input" placeholder="Was möchtest du wissen?" maxlength="500" disabled>
-        <button id="confirm_chat_input" class="chat-send-btn">{$OUTPUT->pix_icon('i/send', 'Send')}</button>
+        <button id="confirm_chat_input" class="chat-send-btn"><img src="{$CFG->wwwroot}/mod/mybrainchat/pix/send.svg" alt="Send"></button>
       </div>
       <div class="input-counter" id="input_counter">0/500</div>
-    </div>
-  </div>
-  
-  <!-- Confirmation dialog -->
-  <div id="confirmBox" class="confirm-box" style="display: none;">
-    <div class="confirm-content">
-      <p>Möchtest du den Chat wirklich beenden?</p>
-      <div class="confirm-buttons">
-        <button id="confirm_close_chat_btn" class="confirm-yes">Ja</button>
-        <button id="cancel_confirm_box_btn" class="confirm-no">Nein</button>
-      </div>
     </div>
   </div>
 </div>

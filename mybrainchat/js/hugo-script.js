@@ -38,13 +38,13 @@ class MyBrainChat {
     let chat_input = document.getElementById("chat_input");
     let intro_text = document.getElementById("intro-text");
     intro_text.style.display = "block";
-    intro_text.textContent = "Willkommen! Stelle eine Frage an das Brain.";
+    intro_text.textContent = "Willkommen! Stelle eine Frage an Hugo.";
     chat_input.disabled = false;
     chat_input.focus();
     chat_input.value = "";
     
     // Set a random background image if available
-    this.setRandomBackground();
+    // this.setRandomBackground();
   }
 
   /**
