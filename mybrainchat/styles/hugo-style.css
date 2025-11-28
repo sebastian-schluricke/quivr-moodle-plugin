@@ -79,6 +79,35 @@ div[role="main"] > h2 {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* New Chat button */
+.new-chat-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 20px;
+  transition: background-color 0.3s, border-color 0.3s;
+  white-space: nowrap;
+}
+
+.new-chat-btn:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.new-chat-btn:active {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+.new-chat-btn svg {
+  flex-shrink: 0;
+}
+
 /* Chat history */
 .chat-history {
   flex: 1;

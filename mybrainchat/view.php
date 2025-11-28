@@ -28,7 +28,13 @@ $PAGE->set_context($context);
 // Get instance data
 $instance = $DB->get_record('mybrainchat', ['id' => $cm->instance], '*', MUST_EXIST);
 $brainid = $instance->brainid;
-$apikey = $instance->apikey; // Wird aktuell nicht im Frontend verwendet
+// Note: API key is NOT exposed to frontend - it's only used server-side in get_token.php
+
+// Get Quivr API URL from plugin settings
+$quivr_api_url = get_config('mod_mybrainchat', 'quivr_api_url');
+if (empty($quivr_api_url)) {
+    $quivr_api_url = getenv('QUIVR_API_URL') ?: 'http://localhost:5050';
+}
 
 // Add CSS for Hugo-style UI
 $PAGE->requires->css(new moodle_url('/mod/mybrainchat/styles/hugo-style.css'));
@@ -52,6 +58,12 @@ echo <<<HTML
   <div class="chat-container">
     <div class="chat-header">
       <h2 id="intro-text" class="intro-text">Verbindung zum Brain wird hergestellt...</h2>
+      <button id="new_chat_btn" class="new-chat-btn" title="Neuen Chat starten">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Neuer Chat
+      </button>
     </div>
     
     <div id="chat_history" class="chat-history">
@@ -73,11 +85,22 @@ echo <<<HTML
 // Initialize variables for the chat
 const cmid = {$cmid};
 const brainId = "{$brainid}";
-const apiKey = "{$apikey}";
+const quivrApiUrl = "{$quivr_api_url}";
 document.addEventListener("DOMContentLoaded", function() {
   // The initialization will be handled by the hugo-script.js file
   if (typeof initMyBrainChat === 'function') {
-    initMyBrainChat(cmid, brainId, apiKey);
+    // Note: API key is no longer passed to frontend - tokens are fetched server-side
+    initMyBrainChat(cmid, brainId, quivrApiUrl);
+
+    // Add event listener for "New Chat" button
+    const newChatBtn = document.getElementById('new_chat_btn');
+    if (newChatBtn) {
+      newChatBtn.addEventListener('click', function() {
+        if (myBrainChatInstance) {
+          myBrainChatInstance.startNewChat();
+        }
+      });
+    }
   } else {
     console.error('Hugo script not loaded properly');
   }

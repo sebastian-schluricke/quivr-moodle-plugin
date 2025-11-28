@@ -15,6 +15,7 @@
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The format of the intro field."/>
         <FIELD NAME="brainid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The Quivr Brain ID used for this activity."/>
         <FIELD NAME="apikey" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="The API key used to access the Quivr brain."/>
+        <FIELD NAME="use_for_popup" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether this instance should be used for the course popup chat."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

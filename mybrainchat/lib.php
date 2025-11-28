@@ -49,11 +49,29 @@ function mybrainchat_supports($feature) {
  * @return int The id of the newly inserted record.
  */
 function mybrainchat_add_instance($moduleinstance, $mform = null) {
-    global $DB;
+    global $DB, $USER;
 
     $moduleinstance->timecreated = time();
 
+    // Handle API key: save to user preferences and use saved key if empty
+    if (!empty($moduleinstance->apikey)) {
+        // Save new API key to user preferences
+        set_user_preference('mybrainchat_apikey', $moduleinstance->apikey, $USER->id);
+    } else {
+        // Use saved API key from user preferences
+        $saved_apikey = get_user_preferences('mybrainchat_apikey', '', $USER->id);
+        if (!empty($saved_apikey)) {
+            $moduleinstance->apikey = $saved_apikey;
+        }
+    }
+
     $id = $DB->insert_record('mybrainchat', $moduleinstance);
+
+    // If this instance is set as the popup instance, deactivate all others in the same course
+    if (!empty($moduleinstance->use_for_popup)) {
+        $DB->set_field_select('mybrainchat', 'use_for_popup', 0,
+            'course = ? AND id != ?', [$moduleinstance->course, $id]);
+    }
 
     return $id;
 }
@@ -69,10 +87,34 @@ function mybrainchat_add_instance($moduleinstance, $mform = null) {
  * @return bool True if successful, false otherwise.
  */
 function mybrainchat_update_instance($moduleinstance, $mform = null) {
-    global $DB;
+    global $DB, $USER;
 
     $moduleinstance->timemodified = time();
     $moduleinstance->id = $moduleinstance->instance;
+
+    // Handle API key: save to user preferences and use saved key if empty
+    if (!empty($moduleinstance->apikey)) {
+        // Save new API key to user preferences
+        set_user_preference('mybrainchat_apikey', $moduleinstance->apikey, $USER->id);
+    } else {
+        // Use saved API key from user preferences
+        $saved_apikey = get_user_preferences('mybrainchat_apikey', '', $USER->id);
+        if (!empty($saved_apikey)) {
+            $moduleinstance->apikey = $saved_apikey;
+        } else {
+            // Keep the existing API key from database
+            $existing = $DB->get_record('mybrainchat', ['id' => $moduleinstance->id]);
+            if ($existing && !empty($existing->apikey)) {
+                $moduleinstance->apikey = $existing->apikey;
+            }
+        }
+    }
+
+    // If this instance is set as the popup instance, deactivate all others in the same course
+    if (!empty($moduleinstance->use_for_popup)) {
+        $DB->set_field_select('mybrainchat', 'use_for_popup', 0,
+            'course = ? AND id != ?', [$moduleinstance->course, $moduleinstance->id]);
+    }
 
     return $DB->update_record('mybrainchat', $moduleinstance);
 }

@@ -61,23 +61,42 @@ if (!has_capability('moodle/course:view', $coursecontext)) {
 // Find all mybrainchat instances in the course
 $modinfo = get_fast_modinfo($course);
 $instances = [];
+$primaryInstance = null;
 
 if (isset($modinfo->instances['mybrainchat'])) {
     foreach ($modinfo->instances['mybrainchat'] as $cm) {
         if ($cm->uservisible) {
-            $instances[] = [
+            // Get the instance data to check use_for_popup
+            $instancedata = $DB->get_record('mybrainchat', ['id' => $cm->instance]);
+            $isPrimary = $instancedata && !empty($instancedata->use_for_popup);
+
+            $instance = [
                 'cmid' => $cm->id,
-                'name' => $cm->name
+                'name' => $cm->name,
+                'use_for_popup' => $isPrimary
             ];
+
+            $instances[] = $instance;
+
+            // Remember the primary instance
+            if ($isPrimary) {
+                $primaryInstance = $instance;
+            }
         }
     }
 }
 
-// Return the first available instance
-if (!empty($instances)) {
+// Prefer the primary instance (use_for_popup=1), otherwise return the first available
+if ($primaryInstance) {
+    $response['success'] = true;
+    $response['cmid'] = $primaryInstance['cmid'];
+    $response['name'] = $primaryInstance['name'];
+    $response['is_primary'] = true;
+} else if (!empty($instances)) {
     $response['success'] = true;
     $response['cmid'] = $instances[0]['cmid'];
     $response['name'] = $instances[0]['name'];
+    $response['is_primary'] = false;
 } else {
     $response['message'] = 'No mybrainchat instances found in this course';
 }
