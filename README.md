@@ -1,72 +1,243 @@
-# Quivr Moodle Plugin
+# Quivr Chat - Moodle Activity Plugin
 
-A Moodle plugin that integrates Quivr's AI brain functionality into Moodle courses, allowing students and teachers to interact with AI-powered knowledge bases.
+Ein Moodle-Aktivitätsmodul zur Integration von KI-gestützten Wissensdatenbanken (Quivr Brains) in Moodle-Kurse. Ermöglicht Schüler:innen und Lehrkräften die Interaktion mit RAG-basierten (Retrieval-Augmented Generation) Chatbots direkt in der Lernplattform.
 
-## Overview
+## Übersicht
 
-This repository contains the "mybrainchat" Moodle activity module that connects to the Quivr API to provide AI-powered chat functionality within Moodle courses. The plugin allows course creators to connect specific Quivr brains to course activities, enabling students to ask questions and receive answers based on the knowledge stored in those brains.
+Dieses Plugin verbindet Moodle mit einem [Quivr-Backend](https://github.com/sebastian-schluricke/quivr-for-moodle), um KI-gestützte Chat-Funktionalität in Kursen bereitzustellen. Lehrkräfte können spezifische "Brains" (Wissensdatenbanken) mit Kursaktivitäten verknüpfen, sodass Lernende Fragen stellen und Antworten basierend auf den hinterlegten Dokumenten erhalten.
+
+**Anwendungsfall Schule:** Lehrkräfte laden Unterrichtsmaterialien, Skripte oder Lehrpläne in ein Quivr-Brain hoch. Schüler:innen können dann im Moodle-Kurs Fragen zu diesen Materialien stellen und erhalten KI-generierte Antworten mit Quellenangaben.
 
 ## Features
 
-- Integration with Quivr API for AI-powered chat
-- Streaming responses for a more interactive experience
-- Support for follow-up questions
-- Feedback mechanisms for responses
-- Customizable UI with different background options
-- Multi-language support (English and German)
+- **KI-Chat-Integration**: Streaming-Antworten für flüssige Konversation
+- **Sichere Token-Architektur**: API-Keys werden nie an den Browser übertragen
+- **Markdown-Rendering**: Formatierte Antworten mit Syntax-Highlighting für Code
+- **Popup-Chat**: Optionaler schwebender Chat-Button auf allen Kursseiten
+- **Session-Persistenz**: Chat-Verlauf bleibt während der Sitzung erhalten
+- **Mehrsprachig**: Deutsch und Englisch
 
-## Repository Structure
+## Architektur
 
-- `/mybrainchat/` - The main Moodle plugin directory
-  - `/api/` - API integration with Quivr
-  - `/classes/` - PHP classes for the plugin
-  - `/db/` - Database definitions and access control
-  - `/js/` - JavaScript files for the frontend
-  - `/lang/` - Language files
-  - `/pix/` - Images and icons
-  - `/styles/` - CSS stylesheets
+```
+┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
+│                 │         │                 │         │                 │
+│  Moodle Frontend│◄───────►│  Moodle Backend │◄───────►│  Quivr Backend  │
+│  (JavaScript)   │  Token  │  (PHP)          │  API    │  (Python/FastAPI)│
+│                 │         │                 │  Key    │                 │
+└─────────────────┘         └─────────────────┘         └─────────────────┘
+```
 
-- `/testing/` - Testing utilities and examples
+### Token-Flow (Sicherheitsmodell)
+
+1. Lehrkraft speichert ihren API-Key in der Moodle-Aktivität
+2. API-Key wird in der Datenbank gespeichert (nie an Frontend übertragen)
+3. Frontend fordert vom Moodle-Backend einen zeitlich begrenzten, brain-spezifischen Token an
+4. Frontend nutzt diesen scoped Token direkt mit der Quivr-API für Chat-Operationen
+
+## Voraussetzungen
+
+- **Moodle**: Version 4.0 oder höher
+- **PHP**: Version 8.0 oder höher
+- **Quivr-Backend**: [quivr-for-moodle](https://github.com/sebastian-schluricke/quivr-for-moodle) (selbst gehostet)
+- **Datenbank**: MySQL/MariaDB oder PostgreSQL
 
 ## Installation
 
-See the [plugin README](./mybrainchat/README.md) for detailed installation instructions.
+### 1. Plugin installieren
 
-## Requirements
+```bash
+# Plugin in Moodle-Verzeichnis kopieren
+cp -r quivrchat /path/to/moodle/mod/
 
-- Moodle 3.9 or higher
-- PHP 7.4 or higher
-- Access to a Quivr API instance
-- API key for the Quivr service
+# Moodle-Upgrade ausführen
+php /path/to/moodle/admin/cli/upgrade.php
+```
 
-## Development
+Oder über die Moodle-Oberfläche:
+1. Administration → Plugins → Plugin installieren
+2. ZIP-Datei des Plugins hochladen
 
-### Setup
+### 2. Plugin konfigurieren
 
-1. Clone this repository into your Moodle modules directory:
-   ```
-   git clone https://github.com/ESFL/quivr-moodle-plugin.git /path/to/moodle/mod/mybrainchat
-   ```
+1. **API-URL festlegen**:
+   - Website-Administration → Plugins → Aktivitäten → Quivr Chat
+   - Quivr API URL eingeben (z.B. `https://quivr.ihre-schule.de`)
 
-2. Install the plugin through the Moodle admin interface or using the command line:
-   ```
-   php admin/cli/upgrade.php
-   ```
+### 3. Aktivität in Kurs hinzufügen
 
-### Testing
+1. Kurs bearbeiten → Aktivität hinzufügen → "Quivr Chat"
+2. Namen eingeben
+3. API-Key eingeben (vom Quivr-Backend)
+4. "Brains laden" klicken
+5. Brain auswählen
+6. Optional: "Als Popup-Chat verwenden" aktivieren
+7. Speichern
 
-The `/testing/` directory contains examples and utilities for testing the plugin's functionality.
+## Konfiguration
 
-## License
+### Site-weite Einstellungen
 
-This project is licensed under the GNU GPL v3 - see the [LICENSE](./mybrainchat/LICENSE.md) file for details.
+| Einstellung | Beschreibung | Standardwert |
+|-------------|--------------|--------------|
+| `quivr_api_url` | URL des Quivr-Backends | - |
 
-## Contributing
+### Aktivitäts-Einstellungen
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+| Einstellung | Beschreibung |
+|-------------|--------------|
+| Name | Anzeigename der Aktivität |
+| API-Key | Quivr API-Key der Lehrkraft |
+| Brain | Ausgewählte Wissensdatenbank |
+| Als Popup | Chat als schwebendes Fenster im gesamten Kurs |
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## Dateistruktur
+
+```
+quivrchat/
+├── api/                    # PHP-API-Endpunkte
+│   ├── get_token.php       # Scoped Token abrufen
+│   ├── get_brains.php      # Verfügbare Brains laden
+│   ├── session_chat.php    # Chat-Session verwalten
+│   └── get_instance.php    # Popup-Instanz abrufen
+├── classes/                # Moodle-Klassen
+├── db/                     # Datenbank-Schema & Berechtigungen
+│   ├── access.php
+│   ├── install.xml
+│   └── upgrade.php
+├── js/                     # Frontend JavaScript
+│   ├── quivr-chat.js       # Haupt-Chat-Klasse
+│   ├── popup-chat.js       # Popup-Overlay
+│   └── vendor/             # Externe Bibliotheken
+├── lang/                   # Sprachdateien
+│   ├── de/
+│   └── en/
+├── styles/                 # CSS
+│   ├── quivr-chat.css
+│   └── vendor/
+├── lib.php                 # Moodle Core Hooks
+├── mod_form.php            # Aktivitäts-Formular
+├── view.php                # Hauptansicht
+└── settings.php            # Admin-Einstellungen
+```
+
+## Entwicklung
+
+### Lokale Entwicklungsumgebung
+
+```bash
+# Repository klonen
+git clone git@github.com:sebastian-schluricke/quivr-moodle-plugin.git
+
+# Plugin in Moodle-Installation verlinken
+ln -s /path/to/quivr-moodle-plugin/quivrchat /path/to/moodle/mod/quivrchat
+
+# Nach Änderungen Caches leeren
+php /path/to/moodle/admin/cli/purge_caches.php
+```
+
+### Docker-Entwicklung
+
+```bash
+# Plugin in Docker-Container kopieren
+docker cp quivrchat moodle-container:/var/www/html/mod/quivrchat
+
+# Upgrade ausführen
+docker exec moodle-container php /var/www/html/admin/cli/upgrade.php --non-interactive
+
+# Caches leeren
+docker exec moodle-container php /var/www/html/admin/cli/purge_caches.php
+```
+
+### Debugging
+
+Debug-Modus in Moodle aktivieren:
+```php
+// config.php
+@error_reporting(E_ALL | E_STRICT);
+@ini_set('display_errors', '1');
+$CFG->debug = (E_ALL | E_STRICT);
+$CFG->debugdisplay = 1;
+```
+
+Browser-Konsole zeigt JavaScript-Debug-Informationen.
+
+## API-Endpunkte
+
+### GET /mod/quivrchat/api/get_brains.php
+
+Lädt verfügbare Brains für den API-Key.
+
+**Parameter:**
+- `apikey` (optional): API-Key, falls nicht in User-Preferences gespeichert
+
+**Response:**
+```json
+{
+  "success": true,
+  "brains": [
+    {"id": "uuid", "name": "Brain Name"}
+  ]
+}
+```
+
+### POST /mod/quivrchat/api/get_token.php
+
+Holt einen zeitlich begrenzten Chat-Token.
+
+**Parameter:**
+- `instanceid`: ID der Quivr-Chat-Instanz
+
+**Response:**
+```json
+{
+  "success": true,
+  "token": "eyJ...",
+  "brainId": "uuid"
+}
+```
+
+### GET/POST/DELETE /mod/quivrchat/api/session_chat.php
+
+Verwaltet Chat-Session-Daten (chat_id, history).
+
+## Zusammenspiel mit Quivr-Backend
+
+Dieses Plugin benötigt das [quivr-for-moodle](https://github.com/sebastian-schluricke/quivr-for-moodle) Backend. Wichtige Endpunkte:
+
+| Plugin-Endpunkt | Quivr-API | Zweck |
+|-----------------|-----------|-------|
+| `get_token.php` | `POST /chat/token` | Scoped Token erstellen |
+| `get_brains.php` | `GET /brains/` | Brains auflisten |
+| JS QuivrChat | `POST /chat` | Chat-Session erstellen |
+| JS QuivrChat | `POST /chat/{id}/question/stream` | Frage stellen (Streaming) |
+
+## Bekannte Einschränkungen
+
+- Feedback-Daumen-Feature ist deaktiviert (siehe TODO.md)
+- UI primär auf Deutsch (hardcodierte Strings in view.php)
+- Streaming-Parser unterstützt mehrere Formate (JSON-Chunks, SSE, Plain Text)
+
+## Lizenz
+
+GNU General Public License v3.0 - siehe [LICENSE](quivrchat/LICENSE.md)
+
+## Mitwirken
+
+Beiträge sind willkommen! Bitte erstellen Sie einen Pull Request.
+
+1. Repository forken
+2. Feature-Branch erstellen (`git checkout -b feature/neue-funktion`)
+3. Änderungen committen
+4. Branch pushen (`git push origin feature/neue-funktion`)
+5. Pull Request öffnen
+
+## Support
+
+Bei Fragen oder Problemen:
+- [GitHub Issues](https://github.com/sebastian-schluricke/quivr-moodle-plugin/issues)
+
+## Verwandte Projekte
+
+- [quivr-for-moodle](https://github.com/sebastian-schluricke/quivr-for-moodle) - Das Quivr-Backend (Fork)
+- [QuivrHQ/quivr](https://github.com/QuivrHQ/quivr) - Original Quivr-Projekt
