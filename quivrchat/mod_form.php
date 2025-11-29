@@ -55,8 +55,8 @@ class mod_quivrchat_mod_form extends moodleform_mod {
             $mform->setType('name', PARAM_CLEANHTML);
         }
 
-        $mform->addRule('name', null, 'required', null, 'client');
-        $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addRule('name', null, 'required', null, 'server');
+        $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'server');
         $mform->addHelpButton('name', 'quivrchatname', 'mod_quivrchat');
 
         // Adding the standard "intro" and "introformat" fields.
@@ -88,10 +88,15 @@ class mod_quivrchat_mod_form extends moodleform_mod {
         $mform->addElement('passwordunmask', 'apikey', get_string('apikey', 'mod_quivrchat'));
         $mform->setType('apikey', PARAM_RAW);
 
-        // Only require API key if no saved key exists
-        if (!$has_saved_key) {
-            $mform->addRule('apikey', null, 'required', null, 'client');
+        // Pre-fill API key from user preferences if available
+        if ($has_saved_key) {
+            $mform->setDefault('apikey', $saved_apikey);
         }
+
+        // Note: We don't add a client-side required rule here because:
+        // 1. The validation() method handles the actual requirement check
+        // 2. Client-side validation can interfere when API key is entered and brains are loaded via AJAX
+        // The server-side validation in validation() will enforce the requirement
 
         $mform->addHelpButton('apikey', 'apikey', 'mod_quivrchat');
 
@@ -100,11 +105,7 @@ class mod_quivrchat_mod_form extends moodleform_mod {
             'id' => 'id_loadbrains'
         ]);
 
-        // Hidden field for actual brainid value (bypasses Moodle's select validation)
-        $mform->addElement('hidden', 'brainid', '');
-        $mform->setType('brainid', PARAM_RAW);
-
-        // Visual select for brain selection (not submitted directly)
+        // Brain selection dropdown - directly named 'brainid' so value is saved correctly
         $brainoptions = ['' => get_string('selectbrain', 'mod_quivrchat')];
 
         // Try to load brains if we have an API key
@@ -117,10 +118,11 @@ class mod_quivrchat_mod_form extends moodleform_mod {
             }
         }
 
-        $mform->addElement('select', 'brainid_select', get_string('brainid', 'mod_quivrchat'), $brainoptions, [
-            'id' => 'id_brainid_select'
+        $mform->addElement('select', 'brainid', get_string('brainid', 'mod_quivrchat'), $brainoptions, [
+            'id' => 'id_brainid'
         ]);
-        $mform->addHelpButton('brainid_select', 'brainid', 'mod_quivrchat');
+        $mform->setType('brainid', PARAM_RAW);
+        $mform->addHelpButton('brainid', 'brainid', 'mod_quivrchat');
 
         // Status message area
         $mform->addElement('static', 'brains_status', '', '<div id="brains_status"></div>');
@@ -144,28 +146,12 @@ class mod_quivrchat_mod_form extends moodleform_mod {
         $PAGE->requires->js_amd_inline("
             require(['jquery'], function(\$) {
                 var wwwroot = M.cfg.wwwroot;
-                var brainSelect = \$('#id_brainid_select');
-                var brainHidden = \$('#id_brainid');
-
-                // Sync select to hidden field on change
-                brainSelect.on('change', function() {
-                    brainHidden.val(\$(this).val());
-                });
-
-                // Initialize hidden field from select (in case of pre-selected value)
-                if (brainSelect.val()) {
-                    brainHidden.val(brainSelect.val());
-                }
-
-                // Also sync before form submit to ensure value is captured
-                \$('form').on('submit', function() {
-                    brainHidden.val(brainSelect.val());
-                });
+                var brainSelect = \$('#id_brainid');
 
                 \$('#id_loadbrains').on('click', function() {
                     var apikey = \$('#id_apikey').val();
                     var statusDiv = \$('#brains_status');
-                    var currentBrain = brainHidden.val() || brainSelect.val();
+                    var currentBrain = brainSelect.val();
 
                     statusDiv.html('<div class=\"alert alert-info\">" . get_string('loadingbrains', 'mod_quivrchat') . "</div>');
 
@@ -184,12 +170,10 @@ class mod_quivrchat_mod_form extends moodleform_mod {
                                     brainSelect.append('<option value=\"' + brain.id + '\" ' + selected + '>' + brain.name + '</option>');
                                 });
 
-                                // If we had a current brain, re-select it and sync to hidden field
+                                // If we had a current brain, re-select it
                                 if (currentBrain) {
                                     brainSelect.val(currentBrain);
                                 }
-                                // Always sync to hidden field after loading
-                                brainHidden.val(brainSelect.val());
 
                                 statusDiv.html('<div class=\"alert alert-success\">" . get_string('brainsloaded', 'mod_quivrchat') . " (' + response.brains.length + ')</div>');
                             } else {
@@ -272,14 +256,8 @@ class mod_quivrchat_mod_form extends moodleform_mod {
      * @param array $defaultvalues
      */
     public function data_preprocessing(&$defaultvalues) {
-        global $USER;
-
         parent::data_preprocessing($defaultvalues);
-
-        // Copy brainid to brainid_select for display
-        if (!empty($defaultvalues['brainid'])) {
-            $defaultvalues['brainid_select'] = $defaultvalues['brainid'];
-        }
+        // brainid is now directly used in the select, no preprocessing needed
     }
 
     /**
@@ -302,10 +280,40 @@ class mod_quivrchat_mod_form extends moodleform_mod {
         }
 
         // Check if brain is selected
-        if (empty($data['brainid'])) {
+        // Note: brainid might be empty in $data if options were loaded via AJAX
+        // In that case, check $_POST directly as fallback
+        $brainid = $data['brainid'] ?? '';
+        if (empty($brainid) && !empty($_POST['brainid'])) {
+            $brainid = $_POST['brainid'];
+        }
+
+        if (empty($brainid)) {
             $errors['brainid'] = get_string('required');
         }
 
         return $errors;
+    }
+
+    /**
+     * Get submitted data, ensuring brainid is captured from POST if needed
+     *
+     * @return object|null
+     */
+    public function get_data() {
+        $data = parent::get_data();
+
+        if ($data !== null) {
+            // If brainid is empty but was submitted via POST, use that value
+            // This happens when options are loaded dynamically via AJAX
+            if (empty($data->brainid) && !empty($_POST['brainid'])) {
+                // Validate it's a valid UUID format
+                $brainid = $_POST['brainid'];
+                if (preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $brainid)) {
+                    $data->brainid = $brainid;
+                }
+            }
+        }
+
+        return $data;
     }
 }

@@ -3,10 +3,121 @@
  * This script handles the chat UI and communication with the quivr backend
  *
  * Updated to use scoped chat tokens instead of exposing the API key.
+ * Now includes Markdown rendering with syntax highlighting.
  */
 
 // Global reference to the chat instance
 let myBrainChatInstance = null;
+
+/**
+ * Configure marked.js for Markdown rendering
+ */
+function initializeMarkdownRenderer() {
+  if (typeof marked !== 'undefined') {
+    // Configure marked options
+    marked.setOptions({
+      breaks: true,        // Convert \n to <br>
+      gfm: true,           // GitHub Flavored Markdown
+      headerIds: false,    // Don't add IDs to headers (cleaner output)
+      mangle: false,       // Don't escape autolinks
+      highlight: function(code, lang) {
+        // Use highlight.js if available
+        if (typeof hljs !== 'undefined' && lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(code, { language: lang }).value;
+          } catch (e) {
+            console.warn('Highlight.js error:', e);
+          }
+        }
+        // Fallback: escape HTML and return
+        return code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+    });
+    console.log('Markdown renderer initialized');
+  } else {
+    console.warn('marked.js not loaded - Markdown rendering disabled');
+  }
+}
+
+/**
+ * Render Markdown to safe HTML
+ * @param {string} markdown - The markdown text to render
+ * @returns {string} Sanitized HTML string
+ */
+function renderMarkdown(markdown) {
+  if (!markdown) return '';
+
+  // Check if marked is available
+  if (typeof marked === 'undefined') {
+    console.warn('marked.js not available, returning plain text');
+    return escapeHtml(markdown);
+  }
+
+  try {
+    // Parse markdown to HTML
+    const html = marked.parse(markdown);
+
+    // Sanitize with DOMPurify if available
+    if (typeof DOMPurify !== 'undefined') {
+      return DOMPurify.sanitize(html, {
+        USE_PROFILES: { html: true },
+        ADD_ATTR: ['target'],  // Allow target attribute for links
+        FORBID_TAGS: ['style', 'script', 'iframe', 'form', 'input']
+      });
+    }
+
+    // Fallback: basic sanitization (not recommended for production)
+    console.warn('DOMPurify not available - using basic sanitization');
+    return html;
+  } catch (e) {
+    console.error('Markdown rendering error:', e);
+    return escapeHtml(markdown);
+  }
+}
+
+/**
+ * Escape HTML special characters (fallback)
+ * @param {string} text - Text to escape
+ * @returns {string} Escaped text
+ */
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+/**
+ * Trigger MathJax typesetting on an element
+ * Works with both MathJax 2.x (Moodle default) and MathJax 3.x
+ * Supports LaTeX (\(...\), \[...\], $$...$$) and AsciiMath (`...`)
+ * @param {HTMLElement} element - The element to typeset
+ */
+function typesetMath(element) {
+  if (!element) return;
+
+  // MathJax 2.x (used by Moodle's mathjaxloader filter)
+  if (typeof MathJax !== 'undefined' && MathJax.Hub) {
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, element]);
+    return;
+  }
+
+  // MathJax 3.x
+  if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+    MathJax.typesetPromise([element]).catch(function(err) {
+      console.warn('MathJax typeset error:', err);
+    });
+    return;
+  }
+
+  // MathJax not available - no action needed
+}
+
+// Initialize markdown renderer when script loads
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeMarkdownRenderer);
+} else {
+  initializeMarkdownRenderer();
+}
 
 // Initialize the chat when the page loads
 function initQuivrChat(cmid, brainId, quivrApiUrl) {
@@ -100,7 +211,24 @@ class QuivrChat {
         displayDiv.textContent = msg.content;
       } else if (msg.role === 'assistant') {
         displayDiv.className = "displayUser-container left-container";
-        displayDiv.textContent = msg.content;
+        // Render assistant messages as Markdown
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'markdown-content';
+        contentDiv.innerHTML = renderMarkdown(msg.content);
+        displayDiv.appendChild(contentDiv);
+
+        // Apply syntax highlighting to code blocks
+        if (typeof hljs !== 'undefined') {
+          contentDiv.querySelectorAll('pre code').forEach((block) => {
+            if (!block.classList.contains('hljs')) {
+              hljs.highlightElement(block);
+            }
+          });
+        }
+
+        // Typeset math expressions (LaTeX, AsciiMath)
+        typesetMath(contentDiv);
+
         // Set the question amount to track for new messages
         this.questionAmount = Math.floor(index / 2) + 1;
       }
@@ -564,7 +692,30 @@ class QuivrChat {
     var answerDiv = document.getElementById(this.prefixId + this.questionAmount);
 
     if (answerDiv) {
-      answerDiv.textContent = answer;
+      // Render Markdown to HTML
+      const renderedHtml = renderMarkdown(answer);
+
+      // Create a wrapper for the markdown content
+      let contentDiv = answerDiv.querySelector('.markdown-content');
+      if (!contentDiv) {
+        contentDiv = document.createElement('div');
+        contentDiv.className = 'markdown-content';
+        answerDiv.appendChild(contentDiv);
+      }
+      contentDiv.innerHTML = renderedHtml;
+
+      // Apply syntax highlighting to code blocks if hljs is available
+      if (typeof hljs !== 'undefined') {
+        contentDiv.querySelectorAll('pre code').forEach((block) => {
+          // Only highlight if not already highlighted
+          if (!block.classList.contains('hljs')) {
+            hljs.highlightElement(block);
+          }
+        });
+      }
+
+      // Typeset math expressions (LaTeX, AsciiMath)
+      typesetMath(contentDiv);
 
       if (metadata && metadata.followup_questions && metadata.followup_questions.length > 0) {
         this.displayFollowUpQuestions(metadata.followup_questions);

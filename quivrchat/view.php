@@ -38,6 +38,17 @@ if (empty($quivr_api_url)) {
 
 // Add CSS for Quivr Chat-style UI
 $PAGE->requires->css(new moodle_url('/mod/quivrchat/styles/quivr-chat.css'));
+
+// Add Markdown rendering libraries (loaded before quivr-chat.js)
+// marked.js - Markdown parser (v12.0.0)
+$PAGE->requires->js(new moodle_url('/mod/quivrchat/js/vendor/marked.min.js'), true);
+// DOMPurify - XSS protection for HTML rendering (v3.0.8)
+$PAGE->requires->js(new moodle_url('/mod/quivrchat/js/vendor/purify.min.js'), true);
+// highlight.js - Syntax highlighting for code blocks (v11.9.0)
+$PAGE->requires->css(new moodle_url('/mod/quivrchat/styles/vendor/highlight-github.css'));
+$PAGE->requires->js(new moodle_url('/mod/quivrchat/js/vendor/highlight.min.js'), true);
+
+// Main chat script (must load after libraries)
 $PAGE->requires->js(new moodle_url('/mod/quivrchat/js/quivr-chat.js'));
 
 // Add popup-specific adjustments if in popup mode
