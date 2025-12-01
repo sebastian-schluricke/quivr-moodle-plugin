@@ -28,7 +28,7 @@ jobs:
 
       - name: Run CodeChecker
         run: |
-          ./codechecker/vendor/bin/phpcs --standard=codechecker/moodle --extensions=php quivrchat/
+          ./codechecker/vendor/bin/phpcs --standard=moodle --extensions=php quivrchat/
 
   release:
     name: Create Release ZIP
