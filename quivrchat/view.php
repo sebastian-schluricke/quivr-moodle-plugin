@@ -79,7 +79,7 @@ $PAGE->requires->css(new moodle_url('/mod/quivrchat/styles/quivr-chat.css'));
 $PAGE->requires->js(new moodle_url('/mod/quivrchat/js/vendor/marked.min.js'), true);
 // DOMPurify - XSS protection for HTML rendering (v3.0.8).
 $PAGE->requires->js(new moodle_url('/mod/quivrchat/js/vendor/purify.min.js'), true);
-// highlight.js - Syntax highlighting for code blocks (v11.9.0).
+// Highlight.js - Syntax highlighting for code blocks (v11.9.0).
 $PAGE->requires->css(new moodle_url('/mod/quivrchat/styles/vendor/highlight-github.css'));
 $PAGE->requires->js(new moodle_url('/mod/quivrchat/js/vendor/highlight.min.js'), true);
 
@@ -115,7 +115,8 @@ echo <<<HTML
     <div class="chat-header">
       <h2 id="intro-text" class="intro-text">{$strconnecting}</h2>
       <button id="new_chat_btn" class="new-chat-btn" title="{$strnewchattitle}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 5v14M5 12h14"/>
         </svg>
         {$strnewchat}
@@ -128,9 +129,13 @@ echo <<<HTML
 
     <div class="chat-input-container">
       <div class="chat-input-wrapper">
-        <img id="quivr-avatar" src="{$CFG->wwwroot}/mod/quivrchat/pix/avatar.svg" class="chat-avatar" alt="{$stravataralt}">
-        <input type="text" id="chat_input" class="chat-input" placeholder="{$strplaceholder}" maxlength="500" disabled>
-        <button id="confirm_chat_input" class="chat-send-btn"><img src="{$CFG->wwwroot}/mod/quivrchat/pix/send.svg" alt="{$strsend}"></button>
+        <img id="quivr-avatar" src="{$CFG->wwwroot}/mod/quivrchat/pix/avatar.svg"
+            class="chat-avatar" alt="{$stravataralt}">
+        <input type="text" id="chat_input" class="chat-input"
+            placeholder="{$strplaceholder}" maxlength="500" disabled>
+        <button id="confirm_chat_input" class="chat-send-btn">
+            <img src="{$CFG->wwwroot}/mod/quivrchat/pix/send.svg" alt="{$strsend}">
+        </button>
       </div>
       <div class="input-counter" id="input_counter">0/500</div>
     </div>

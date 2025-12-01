@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
 
 /**
  * Module instance settings form.
@@ -34,7 +34,6 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_quivrchat_mod_form extends moodleform_mod {
-
     /**
      * Defines forms elements.
      */
@@ -77,7 +76,10 @@ class mod_quivrchat_mod_form extends moodleform_mod {
         // API Key field.
         if ($hassavedkey) {
             // Show info that API key is saved.
-            $mform->addElement('static', 'apikey_info', '',
+            $mform->addElement(
+                'static',
+                'apikey_info',
+                '',
                 '<div class="alert alert-info">' .
                 get_string('apikey_from_profile_desc', 'mod_quivrchat') .
                 '</div>'
@@ -131,8 +133,14 @@ class mod_quivrchat_mod_form extends moodleform_mod {
         $mform->addElement('header', 'popupsettings', get_string('popupsettings', 'mod_quivrchat'));
 
         // Use for popup checkbox.
-        $mform->addElement('advcheckbox', 'use_for_popup', get_string('use_for_popup', 'mod_quivrchat'),
-            get_string('use_for_popup_desc', 'mod_quivrchat'), [], [0, 1]);
+        $mform->addElement(
+            'advcheckbox',
+            'use_for_popup',
+            get_string('use_for_popup', 'mod_quivrchat'),
+            get_string('use_for_popup_desc', 'mod_quivrchat'),
+            [],
+            [0, 1]
+        );
         $mform->setDefault('use_for_popup', 0);
         $mform->addHelpButton('use_for_popup', 'use_for_popup', 'mod_quivrchat');
 
@@ -257,7 +265,7 @@ class mod_quivrchat_mod_form extends moodleform_mod {
      */
     public function data_preprocessing(&$defaultvalues) {
         parent::data_preprocessing($defaultvalues);
-        // brainid is now directly used in the select, no preprocessing needed.
+        // Brainid is now directly used in the select, no preprocessing needed.
     }
 
     /**

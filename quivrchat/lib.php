@@ -75,8 +75,13 @@ function quivrchat_add_instance($moduleinstance, $mform = null) {
 
     // If this instance is set as the popup instance, deactivate all others in the same course.
     if (!empty($moduleinstance->use_for_popup)) {
-        $DB->set_field_select('quivrchat', 'use_for_popup', 0,
-            'course = ? AND id != ?', [$moduleinstance->course, $id]);
+        $DB->set_field_select(
+            'quivrchat',
+            'use_for_popup',
+            0,
+            'course = ? AND id != ?',
+            [$moduleinstance->course, $id]
+        );
     }
 
     return $id;
@@ -118,8 +123,13 @@ function quivrchat_update_instance($moduleinstance, $mform = null) {
 
     // If this instance is set as the popup instance, deactivate all others in the same course.
     if (!empty($moduleinstance->use_for_popup)) {
-        $DB->set_field_select('quivrchat', 'use_for_popup', 0,
-            'course = ? AND id != ?', [$moduleinstance->course, $moduleinstance->id]);
+        $DB->set_field_select(
+            'quivrchat',
+            'use_for_popup',
+            0,
+            'course = ? AND id != ?',
+            [$moduleinstance->course, $moduleinstance->id]
+        );
     }
 
     return $DB->update_record('quivrchat', $moduleinstance);
@@ -203,9 +213,11 @@ function quivrchat_before_footer() {
     // Don't show the button if we're in popup mode.
     // Note: $PAGE->bodyclasses can be either an array or a string depending on the context.
     // We need to check both types to avoid the error.
-    if ($PAGE->pagelayout === 'popup' ||
+    if (
+        $PAGE->pagelayout === 'popup' ||
         (is_array($PAGE->bodyclasses) && in_array('quivrchat-popup', $PAGE->bodyclasses)) ||
-        (is_string($PAGE->bodyclasses) && strpos($PAGE->bodyclasses, 'quivrchat-popup') !== false)) {
+        (is_string($PAGE->bodyclasses) && strpos($PAGE->bodyclasses, 'quivrchat-popup') !== false)
+    ) {
         return;
     }
 
