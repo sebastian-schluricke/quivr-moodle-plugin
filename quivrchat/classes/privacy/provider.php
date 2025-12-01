@@ -39,18 +39,16 @@ use core_privacy\local\metadata\collection;
  * by the AI service and responses are returned to the user.
  *
  * Data flow:
- * - User questions (text only) are sent to the configured Quivr API endpoint
- * - A scoped authentication token (not linked to user identity) is used
- * - No usernames, email addresses, or other PII are transmitted
- * - Chat history is stored only in the user's PHP session (not in database)
+ * - User questions (text only) are sent to the configured Quivr API endpoint.
+ * - A scoped authentication token (not linked to user identity) is used.
+ * - No usernames, email addresses, or other PII are transmitted.
+ * - Chat history is stored only in the user's PHP session (not in database).
  *
  * @package     mod_quivrchat
  * @copyright   2024 Sebastian Schluricke <schluricke@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements
-    \core_privacy\local\metadata\provider {
-
+class provider implements \core_privacy\local\metadata\provider {
     /**
      * Returns metadata about this plugin's data practices.
      *

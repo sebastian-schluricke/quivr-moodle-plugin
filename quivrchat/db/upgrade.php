@@ -27,15 +27,15 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Execute mod_quivrchat upgrade from the given old version.
  *
- * @param int $oldversion
- * @return bool
+ * @param int $oldversion The old version number.
+ * @return bool True on success.
  */
 function xmldb_quivrchat_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();
 
-    // Add use_for_popup field
+    // Add use_for_popup field.
     if ($oldversion < 2025112802) {
         // Define field use_for_popup to be added to quivrchat.
         $table = new xmldb_table('quivrchat');
@@ -46,7 +46,7 @@ function xmldb_quivrchat_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Mybrainchat savepoint reached.
+        // Quivrchat savepoint reached.
         upgrade_mod_savepoint(true, 2025112802, 'quivrchat');
     }
 

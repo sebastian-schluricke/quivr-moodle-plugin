@@ -27,14 +27,12 @@
  * Define the complete quivrchat structure for backup.
  */
 class backup_quivrchat_activity_structure_step extends backup_activity_structure_step {
-
     /**
      * Defines the structure of the quivrchat element inside the backup.xml file.
      *
-     * @return backup_nested_element
+     * @return backup_nested_element The root element wrapped into standard activity structure.
      */
     protected function define_structure() {
-
         // Define each element separated.
         $quivrchat = new backup_nested_element('quivrchat', ['id'], [
             'name',

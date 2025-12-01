@@ -29,14 +29,14 @@ define('AJAX_SCRIPT', true);
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/filelib.php');
 
-// Require user to be logged in
+// Require user to be logged in.
 require_login();
 
 header('Content-Type: application/json');
 
 global $USER;
 
-// Get API key from user preferences or from POST parameter
+// Get API key from user preferences or from POST parameter.
 $apikey = optional_param('apikey', '', PARAM_RAW);
 if (empty($apikey)) {
     $apikey = get_user_preferences('quivrchat_apikey', '', $USER->id);
@@ -46,38 +46,38 @@ if (empty($apikey)) {
     echo json_encode([
         'success' => false,
         'error' => 'No API key available. Please enter an API key first.',
-        'brains' => []
+        'brains' => [],
     ]);
     exit;
 }
 
-// Quivr API URL - use plugin settings, then environment variable, then default
-// Use host.docker.internal for Docker environments to reach the host machine
-$API_URL = get_config('mod_quivrchat', 'quivr_api_url');
-if (empty($API_URL)) {
-    $API_URL = getenv('QUIVR_API_URL') ?: 'http://host.docker.internal:5050';
+// Quivr API URL - use plugin settings, then environment variable, then default.
+// Use host.docker.internal for Docker environments to reach the host machine.
+$apiurl = get_config('mod_quivrchat', 'quivr_api_url');
+if (empty($apiurl)) {
+    $apiurl = getenv('QUIVR_API_URL') ?: 'http://host.docker.internal:5050';
 }
 
-// Request brains from Quivr
-$ch = curl_init("$API_URL/brains/");
+// Request brains from Quivr.
+$ch = curl_init("$apiurl/brains/");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Authorization: Bearer ' . $apikey,
-    'Content-Type: application/json'
+    'Content-Type: application/json',
 ]);
 
 $response = curl_exec($ch);
-$curl_errno = curl_errno($ch);
-$curl_error = curl_error($ch);
+$curlerrno = curl_errno($ch);
+$curlerror = curl_error($ch);
 $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
-// Check for errors
-if ($curl_errno !== 0) {
+// Check for errors.
+if ($curlerrno !== 0) {
     echo json_encode([
         'success' => false,
-        'error' => 'Failed to connect to Quivr backend: ' . $curl_error,
-        'brains' => []
+        'error' => 'Failed to connect to Quivr backend: ' . $curlerror,
+        'brains' => [],
     ]);
     exit;
 }
@@ -87,33 +87,33 @@ if ($httpcode !== 200) {
     echo json_encode([
         'success' => false,
         'error' => 'Failed to fetch brains: ' . ($data['detail'] ?? 'HTTP ' . $httpcode),
-        'brains' => []
+        'brains' => [],
     ]);
     exit;
 }
 
 $data = json_decode($response, true);
 
-// Transform the response to a simpler format
-// API returns {"brains": [...]} so we need to access the brains key
+// Transform the response to a simpler format.
+// API returns {"brains": [...]} so we need to access the brains key.
 $brains = [];
 $brainslist = $data['brains'] ?? $data;
 if (is_array($brainslist)) {
     foreach ($brainslist as $brain) {
-        // Skip model entries (brain_type = "model")
+        // Skip model entries (brain_type = "model").
         if (isset($brain['brain_type']) && $brain['brain_type'] === 'model') {
             continue;
         }
         $brains[] = [
             'id' => (string)($brain['id'] ?? $brain['brain_id'] ?? ''),
             'name' => $brain['name'] ?? 'Unnamed Brain',
-            'description' => $brain['description'] ?? ''
+            'description' => $brain['description'] ?? '',
         ];
     }
 }
 
-// Return the brains list
+// Return the brains list.
 echo json_encode([
     'success' => true,
-    'brains' => $brains
+    'brains' => $brains,
 ]);

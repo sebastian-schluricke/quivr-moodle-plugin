@@ -29,11 +29,11 @@ require_login();
 
 header('Content-Type: application/json');
 
-// Moodle parameters
+// Moodle parameters.
 $cmid = required_param('cmid', PARAM_INT);
 $question = required_param('question', PARAM_TEXT);
 
-// Load the activity
+// Load the activity.
 $cm = get_coursemodule_from_id('quivrchat', $cmid, 0, false, MUST_EXIST);
 $context = context_module::instance($cm->id);
 require_capability('mod/quivrchat:view', $context);
@@ -42,14 +42,18 @@ $instance = $DB->get_record('quivrchat', ['id' => $cm->instance], '*', MUST_EXIS
 $brainid = $instance->brainid;
 $apikey = $instance->apikey;
 
-// API URL for quivr backend
-$API_URL = 'https://api.quivr.esfl.io';
+// API URL for quivr backend.
+$apiurl = 'https://api.quivr.esfl.io';
 
-// Step 1: Create chat
-$chat = curl_post_json("$API_URL/chat", [
-    'name'     => 'Moodle Chat',
-    'brain_id' => $brainid
-], $apikey);
+// Step 1: Create chat.
+$chat = curl_post_json(
+    "$apiurl/chat",
+    [
+        'name' => 'Moodle Chat',
+        'brain_id' => $brainid,
+    ],
+    $apikey
+);
 
 if (!isset($chat['chat_id'])) {
     http_response_code(500);
@@ -59,9 +63,9 @@ if (!isset($chat['chat_id'])) {
 
 $chatid = $chat['chat_id'];
 
-// Step 2: Ask question (non-streaming response expected here)
+// Step 2: Ask question (non-streaming response expected here).
 $reply = curl_post_json(
-    "$API_URL/chat/$chatid/question/stream?brain_id=$brainid",
+    "$apiurl/chat/$chatid/question/stream?brain_id=$brainid",
     ['question' => $question],
     $apikey
 );
@@ -69,27 +73,33 @@ $reply = curl_post_json(
 echo json_encode(['answer' => $reply['fullMessage'] ?? 'No response.']);
 
 
-// Helper function to POST JSON using Moodle's curl
+/**
+ * Helper function to POST JSON using Moodle's curl.
+ *
+ * @param string $url The URL to post to.
+ * @param array $data The data to send.
+ * @param string $apikey The API key for authorization.
+ * @return array The decoded JSON response.
+ */
 function curl_post_json($url, $data, $apikey) {
     $curl = new curl();
 
-    // Build the header lines
+    // Build the header lines.
     $headers = [
         "Authorization: Bearer $apikey",
         "Content-Type: application/json",
     ];
 
-    // Use string keys for curl options
+    // Use string keys for curl options.
     $options = [
         'CURLOPT_HTTPHEADER' => $headers,
     ];
 
-    // JSON-encode the payload
-    $json_data = json_encode($data);
+    // JSON-encode the payload.
+    $jsondata = json_encode($data);
 
-    // Send the request with JSON body and options
-    $response = $curl->post($url, $json_data, $options);
+    // Send the request with JSON body and options.
+    $response = $curl->post($url, $jsondata, $options);
 
     return json_decode($response, true);
 }
-

@@ -16,8 +16,6 @@
 
 namespace mod_quivrchat\event;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Event for when the Quivr Chat activity is viewed.
  *
@@ -26,7 +24,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_module_viewed extends \core\event\course_module_viewed {
-
     /**
      * Init method.
      *

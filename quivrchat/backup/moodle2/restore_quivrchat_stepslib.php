@@ -27,11 +27,10 @@
  * Structure step to restore one quivrchat activity.
  */
 class restore_quivrchat_activity_structure_step extends restore_activity_structure_step {
-
     /**
      * Defines the structure to be restored.
      *
-     * @return restore_path_element[]
+     * @return restore_path_element[] Array of restore path elements.
      */
     protected function define_structure() {
         $paths = [];

@@ -31,7 +31,6 @@ require_once($CFG->dirroot . '/mod/quivrchat/backup/moodle2/restore_quivrchat_st
  * Restore task for the quivrchat activity module.
  */
 class restore_quivrchat_activity_task extends restore_activity_task {
-
     /**
      * Define (add) particular settings this activity can have.
      */
@@ -50,7 +49,7 @@ class restore_quivrchat_activity_task extends restore_activity_task {
     /**
      * Define the contents in the activity that must be processed by the link decoder.
      *
-     * @return restore_decode_content[]
+     * @return restore_decode_content[] Array of restore decode content objects.
      */
     public static function define_decode_contents() {
         $contents = [];
@@ -63,7 +62,7 @@ class restore_quivrchat_activity_task extends restore_activity_task {
     /**
      * Define the decoding rules for links belonging to the activity to be executed by the link decoder.
      *
-     * @return restore_decode_rule[]
+     * @return restore_decode_rule[] Array of restore decode rule objects.
      */
     public static function define_decode_rules() {
         $rules = [];
@@ -77,7 +76,7 @@ class restore_quivrchat_activity_task extends restore_activity_task {
     /**
      * Define the restore log rules that will be applied when restoring quivrchat logs.
      *
-     * @return restore_log_rule[]
+     * @return restore_log_rule[] Array of restore log rule objects.
      */
     public static function define_restore_log_rules() {
         $rules = [];
@@ -92,7 +91,7 @@ class restore_quivrchat_activity_task extends restore_activity_task {
     /**
      * Define the restore log rules that will be applied when restoring course logs.
      *
-     * @return restore_log_rule[]
+     * @return restore_log_rule[] Array of restore log rule objects.
      */
     public static function define_restore_log_rules_for_course() {
         $rules = [];

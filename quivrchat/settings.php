@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($ADMIN->fulltree) {
-    // Quivr API URL setting
+    // Quivr API URL setting.
     $settings->add(new admin_setting_configtext(
         'mod_quivrchat/quivr_api_url',
         get_string('quivr_api_url', 'mod_quivrchat'),

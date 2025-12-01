@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * API endpoint to get a quivrchat instance for a course
+ * API endpoint to get a quivrchat instance for a course.
  *
  * @package     mod_quivrchat
  * @copyright   2024 Sebastian Schluricke <schluricke@gmail.com>
@@ -25,24 +25,24 @@
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->dirroot . '/mod/quivrchat/lib.php');
 
-// Parameters
+// Parameters.
 $courseid = required_param('courseid', PARAM_INT);
 
-// Set up page
+// Set up page.
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url('/mod/quivrchat/api/get_instance.php', ['courseid' => $courseid]);
 
-// Check if user is logged in
+// Check if user is logged in.
 require_login(null, false);
 
-// Prepare response
+// Prepare response.
 $response = [
     'success' => false,
     'cmid' => null,
-    'message' => ''
+    'message' => '',
 ];
 
-// Check if course exists
+// Check if course exists.
 $course = $DB->get_record('course', ['id' => $courseid], '*', IGNORE_MISSING);
 if (!$course) {
     $response['message'] = 'Course not found';
@@ -50,7 +50,7 @@ if (!$course) {
     die();
 }
 
-// Check if user has access to the course
+// Check if user has access to the course.
 $coursecontext = context_course::instance($courseid);
 if (!has_capability('moodle/course:view', $coursecontext)) {
     $response['message'] = 'Access denied';
@@ -58,7 +58,7 @@ if (!has_capability('moodle/course:view', $coursecontext)) {
     die();
 }
 
-// Find all quivrchat instances in the course
+// Find all quivrchat instances in the course.
 $modinfo = get_fast_modinfo($course);
 $instances = [];
 $primaryinstance = null;
@@ -101,6 +101,6 @@ if ($primaryinstance) {
     $response['message'] = 'No quivrchat instances found in this course';
 }
 
-// Output JSON response
+// Output JSON response.
 header('Content-Type: application/json');
 echo json_encode($response);

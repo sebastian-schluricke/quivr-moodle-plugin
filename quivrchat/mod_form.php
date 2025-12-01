@@ -36,7 +36,7 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
 class mod_quivrchat_mod_form extends moodleform_mod {
 
     /**
-     * Defines forms elements
+     * Defines forms elements.
      */
     public function definition() {
         global $CFG, $USER, $PAGE;
@@ -66,17 +66,17 @@ class mod_quivrchat_mod_form extends moodleform_mod {
             $this->add_intro_editor();
         }
 
-        // Adding the rest of mod_quivrchat settings, spreading all them into this fieldset
+        // Adding the rest of mod_quivrchat settings, spreading all them into this fieldset.
         $mform->addElement('static', 'label1', 'quivrchatsettings', get_string('quivrchatsettings', 'mod_quivrchat'));
         $mform->addElement('header', 'quivrchatfieldset', get_string('quivrchatfieldset', 'mod_quivrchat'));
 
-        // Check if user has a saved API key
-        $saved_apikey = get_user_preferences('quivrchat_apikey', '', $USER->id);
-        $has_saved_key = !empty($saved_apikey);
+        // Check if user has a saved API key.
+        $savedapikey = get_user_preferences('quivrchat_apikey', '', $USER->id);
+        $hassavedkey = !empty($savedapikey);
 
-        // API Key field
-        if ($has_saved_key) {
-            // Show info that API key is saved
+        // API Key field.
+        if ($hassavedkey) {
+            // Show info that API key is saved.
             $mform->addElement('static', 'apikey_info', '',
                 '<div class="alert alert-info">' .
                 get_string('apikey_from_profile_desc', 'mod_quivrchat') .
@@ -84,33 +84,33 @@ class mod_quivrchat_mod_form extends moodleform_mod {
             );
         }
 
-        // API Key (password field) - optional if user has saved key
+        // API Key (password field) - optional if user has saved key.
         $mform->addElement('passwordunmask', 'apikey', get_string('apikey', 'mod_quivrchat'));
         $mform->setType('apikey', PARAM_RAW);
 
-        // Pre-fill API key from user preferences if available
-        if ($has_saved_key) {
-            $mform->setDefault('apikey', $saved_apikey);
+        // Pre-fill API key from user preferences if available.
+        if ($hassavedkey) {
+            $mform->setDefault('apikey', $savedapikey);
         }
 
         // Note: We don't add a client-side required rule here because:
-        // 1. The validation() method handles the actual requirement check
-        // 2. Client-side validation can interfere when API key is entered and brains are loaded via AJAX
-        // The server-side validation in validation() will enforce the requirement
+        // 1. The validation() method handles the actual requirement check.
+        // 2. Client-side validation can interfere when API key is entered and brains are loaded via AJAX.
+        // The server-side validation in validation() will enforce the requirement.
 
         $mform->addHelpButton('apikey', 'apikey', 'mod_quivrchat');
 
-        // Button to load brains
+        // Button to load brains.
         $mform->addElement('button', 'loadbrains', get_string('loadbrains', 'mod_quivrchat'), [
-            'id' => 'id_loadbrains'
+            'id' => 'id_loadbrains',
         ]);
 
-        // Brain selection dropdown - directly named 'brainid' so value is saved correctly
+        // Brain selection dropdown - directly named 'brainid' so value is saved correctly.
         $brainoptions = ['' => get_string('selectbrain', 'mod_quivrchat')];
 
-        // Try to load brains if we have an API key
-        if ($has_saved_key) {
-            $brains = $this->fetch_brains($saved_apikey);
+        // Try to load brains if we have an API key.
+        if ($hassavedkey) {
+            $brains = $this->fetch_brains($savedapikey);
             if (!empty($brains)) {
                 foreach ($brains as $brain) {
                     $brainoptions[$brain['id']] = $brain['name'];
@@ -119,18 +119,18 @@ class mod_quivrchat_mod_form extends moodleform_mod {
         }
 
         $mform->addElement('select', 'brainid', get_string('brainid', 'mod_quivrchat'), $brainoptions, [
-            'id' => 'id_brainid'
+            'id' => 'id_brainid',
         ]);
         $mform->setType('brainid', PARAM_RAW);
         $mform->addHelpButton('brainid', 'brainid', 'mod_quivrchat');
 
-        // Status message area
+        // Status message area.
         $mform->addElement('static', 'brains_status', '', '<div id="brains_status"></div>');
 
-        // Popup settings header
+        // Popup settings header.
         $mform->addElement('header', 'popupsettings', get_string('popupsettings', 'mod_quivrchat'));
 
-        // Use for popup checkbox
+        // Use for popup checkbox.
         $mform->addElement('advcheckbox', 'use_for_popup', get_string('use_for_popup', 'mod_quivrchat'),
             get_string('use_for_popup_desc', 'mod_quivrchat'), [], [0, 1]);
         $mform->setDefault('use_for_popup', 0);
@@ -142,7 +142,7 @@ class mod_quivrchat_mod_form extends moodleform_mod {
         // Add standard buttons.
         $this->add_action_buttons();
 
-        // Add inline JavaScript for loading brains
+        // Add inline JavaScript for loading brains.
         $PAGE->requires->js_amd_inline("
             require(['jquery'], function(\$) {
                 var wwwroot = M.cfg.wwwroot;
@@ -170,7 +170,7 @@ class mod_quivrchat_mod_form extends moodleform_mod {
                                     brainSelect.append('<option value=\"' + brain.id + '\" ' + selected + '>' + brain.name + '</option>');
                                 });
 
-                                // If we had a current brain, re-select it
+                                // If we had a current brain, re-select it.
                                 if (currentBrain) {
                                     brainSelect.val(currentBrain);
                                 }
@@ -186,7 +186,7 @@ class mod_quivrchat_mod_form extends moodleform_mod {
                     });
                 });
 
-                // Auto-load brains when page opens
+                // Auto-load brains when page opens.
                 setTimeout(function() {
                     \$('#id_loadbrains').trigger('click');
                 }, 500);
@@ -195,29 +195,29 @@ class mod_quivrchat_mod_form extends moodleform_mod {
     }
 
     /**
-     * Fetch brains from Quivr API
+     * Fetch brains from Quivr API.
      *
-     * @param string $apikey The API key to use
-     * @return array List of brains
+     * @param string $apikey The API key to use.
+     * @return array List of brains.
      */
     private function fetch_brains($apikey) {
         if (empty($apikey)) {
             return [];
         }
 
-        // Get Quivr API URL
-        // Use host.docker.internal for Docker environments to reach the host machine
-        $api_url = get_config('mod_quivrchat', 'quivr_api_url');
-        if (empty($api_url)) {
-            $api_url = getenv('QUIVR_API_URL') ?: 'http://host.docker.internal:5050';
+        // Get Quivr API URL.
+        // Use host.docker.internal for Docker environments to reach the host machine.
+        $apiurl = get_config('mod_quivrchat', 'quivr_api_url');
+        if (empty($apiurl)) {
+            $apiurl = getenv('QUIVR_API_URL') ?: 'http://host.docker.internal:5050';
         }
 
-        // Fetch brains
-        $ch = curl_init("$api_url/brains/");
+        // Fetch brains.
+        $ch = curl_init("$apiurl/brains/");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Authorization: Bearer ' . $apikey,
-            'Content-Type: application/json'
+            'Content-Type: application/json',
         ]);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
@@ -232,17 +232,17 @@ class mod_quivrchat_mod_form extends moodleform_mod {
         $data = json_decode($response, true);
         $brains = [];
 
-        // API returns {"brains": [...]} so we need to access the brains key
+        // API returns {"brains": [...]} so we need to access the brains key.
         $brainslist = $data['brains'] ?? $data;
         if (is_array($brainslist)) {
             foreach ($brainslist as $brain) {
-                // Skip model entries (brain_type = "model")
+                // Skip model entries (brain_type = "model").
                 if (isset($brain['brain_type']) && $brain['brain_type'] === 'model') {
                     continue;
                 }
                 $brains[] = [
                     'id' => (string)($brain['id'] ?? $brain['brain_id'] ?? ''),
-                    'name' => $brain['name'] ?? 'Unnamed Brain'
+                    'name' => $brain['name'] ?? 'Unnamed Brain',
                 ];
             }
         }
@@ -251,37 +251,37 @@ class mod_quivrchat_mod_form extends moodleform_mod {
     }
 
     /**
-     * Pre-process form data before setting defaults
+     * Pre-process form data before setting defaults.
      *
-     * @param array $defaultvalues
+     * @param array $defaultvalues The default values.
      */
     public function data_preprocessing(&$defaultvalues) {
         parent::data_preprocessing($defaultvalues);
-        // brainid is now directly used in the select, no preprocessing needed
+        // brainid is now directly used in the select, no preprocessing needed.
     }
 
     /**
-     * Validate form data
+     * Validate form data.
      *
-     * @param array $data
-     * @param array $files
-     * @return array
+     * @param array $data The form data.
+     * @param array $files The uploaded files.
+     * @return array Array of errors.
      */
     public function validation($data, $files) {
         global $USER;
 
         $errors = parent::validation($data, $files);
 
-        // Check if API key is provided or saved
-        $saved_apikey = get_user_preferences('quivrchat_apikey', '', $USER->id);
+        // Check if API key is provided or saved.
+        $savedapikey = get_user_preferences('quivrchat_apikey', '', $USER->id);
 
-        if (empty($data['apikey']) && empty($saved_apikey)) {
+        if (empty($data['apikey']) && empty($savedapikey)) {
             $errors['apikey'] = get_string('required');
         }
 
-        // Check if brain is selected
-        // Note: brainid might be empty in $data if options were loaded via AJAX
-        // In that case, check $_POST directly as fallback
+        // Check if brain is selected.
+        // Note: brainid might be empty in $data if options were loaded via AJAX.
+        // In that case, check $_POST directly as fallback.
         $brainid = $data['brainid'] ?? '';
         if (empty($brainid) && !empty($_POST['brainid'])) {
             $brainid = $_POST['brainid'];
@@ -295,18 +295,18 @@ class mod_quivrchat_mod_form extends moodleform_mod {
     }
 
     /**
-     * Get submitted data, ensuring brainid is captured from POST if needed
+     * Get submitted data, ensuring brainid is captured from POST if needed.
      *
-     * @return object|null
+     * @return object|null The submitted data or null.
      */
     public function get_data() {
         $data = parent::get_data();
 
         if ($data !== null) {
-            // If brainid is empty but was submitted via POST, use that value
-            // This happens when options are loaded dynamically via AJAX
+            // If brainid is empty but was submitted via POST, use that value.
+            // This happens when options are loaded dynamically via AJAX.
             if (empty($data->brainid) && !empty($_POST['brainid'])) {
-                // Validate it's a valid UUID format
+                // Validate it's a valid UUID format.
                 $brainid = $_POST['brainid'];
                 if (preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $brainid)) {
                     $data->brainid = $brainid;

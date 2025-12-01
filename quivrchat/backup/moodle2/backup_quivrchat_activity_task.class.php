@@ -31,7 +31,6 @@ require_once($CFG->dirroot . '/mod/quivrchat/backup/moodle2/backup_quivrchat_ste
  * Provides the steps to perform one complete backup of the quivrchat instance.
  */
 class backup_quivrchat_activity_task extends backup_activity_task {
-
     /**
      * No specific settings for this activity.
      */

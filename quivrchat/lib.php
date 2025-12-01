@@ -59,21 +59,21 @@ function quivrchat_add_instance($moduleinstance, $mform = null) {
 
     $moduleinstance->timecreated = time();
 
-    // Handle API key: save to user preferences and use saved key if empty
+    // Handle API key: save to user preferences and use saved key if empty.
     if (!empty($moduleinstance->apikey)) {
-        // Save new API key to user preferences
+        // Save new API key to user preferences.
         set_user_preference('quivrchat_apikey', $moduleinstance->apikey, $USER->id);
     } else {
-        // Use saved API key from user preferences
-        $saved_apikey = get_user_preferences('quivrchat_apikey', '', $USER->id);
-        if (!empty($saved_apikey)) {
-            $moduleinstance->apikey = $saved_apikey;
+        // Use saved API key from user preferences.
+        $savedapikey = get_user_preferences('quivrchat_apikey', '', $USER->id);
+        if (!empty($savedapikey)) {
+            $moduleinstance->apikey = $savedapikey;
         }
     }
 
     $id = $DB->insert_record('quivrchat', $moduleinstance);
 
-    // If this instance is set as the popup instance, deactivate all others in the same course
+    // If this instance is set as the popup instance, deactivate all others in the same course.
     if (!empty($moduleinstance->use_for_popup)) {
         $DB->set_field_select('quivrchat', 'use_for_popup', 0,
             'course = ? AND id != ?', [$moduleinstance->course, $id]);
@@ -98,17 +98,17 @@ function quivrchat_update_instance($moduleinstance, $mform = null) {
     $moduleinstance->timemodified = time();
     $moduleinstance->id = $moduleinstance->instance;
 
-    // Handle API key: save to user preferences and use saved key if empty
+    // Handle API key: save to user preferences and use saved key if empty.
     if (!empty($moduleinstance->apikey)) {
-        // Save new API key to user preferences
+        // Save new API key to user preferences.
         set_user_preference('quivrchat_apikey', $moduleinstance->apikey, $USER->id);
     } else {
-        // Use saved API key from user preferences
-        $saved_apikey = get_user_preferences('quivrchat_apikey', '', $USER->id);
-        if (!empty($saved_apikey)) {
-            $moduleinstance->apikey = $saved_apikey;
+        // Use saved API key from user preferences.
+        $savedapikey = get_user_preferences('quivrchat_apikey', '', $USER->id);
+        if (!empty($savedapikey)) {
+            $moduleinstance->apikey = $savedapikey;
         } else {
-            // Keep the existing API key from database
+            // Keep the existing API key from database.
             $existing = $DB->get_record('quivrchat', ['id' => $moduleinstance->id]);
             if ($existing && !empty($existing->apikey)) {
                 $moduleinstance->apikey = $existing->apikey;
@@ -116,7 +116,7 @@ function quivrchat_update_instance($moduleinstance, $mform = null) {
         }
     }
 
-    // If this instance is set as the popup instance, deactivate all others in the same course
+    // If this instance is set as the popup instance, deactivate all others in the same course.
     if (!empty($moduleinstance->use_for_popup)) {
         $DB->set_field_select('quivrchat', 'use_for_popup', 0,
             'course = ? AND id != ?', [$moduleinstance->course, $moduleinstance->id]);
@@ -152,20 +152,20 @@ function quivrchat_delete_instance($id) {
 function mod_quivrchat_before_standard_html_head() {
     global $PAGE, $COURSE;
 
-    // Only add CSS on course pages
+    // Only add CSS on course pages.
     if ($PAGE->context->contextlevel != CONTEXT_COURSE && $PAGE->context->contextlevel != CONTEXT_MODULE) {
         return;
     }
 
-    // Get the course ID
+    // Get the course ID.
     $courseid = ($PAGE->context->contextlevel == CONTEXT_COURSE) ? $PAGE->context->instanceid : $COURSE->id;
-    
-    // Skip if we're not in a real course (e.g., site home)
+
+    // Skip if we're not in a real course (e.g., site home).
     if ($courseid <= 1) {
         return;
     }
 
-    // Check if there are any quivrchat instances in this course
+    // Check if there are any quivrchat instances in this course.
     $modinfo = get_fast_modinfo($COURSE);
     $hasquivrchat = false;
 
@@ -178,12 +178,12 @@ function mod_quivrchat_before_standard_html_head() {
         }
     }
 
-    // Only add CSS if there are quivrchat instances in this course
+    // Only add CSS if there are quivrchat instances in this course.
     if (!$hasquivrchat) {
         return;
     }
 
-    // Add the required CSS - this must be done before the head is printed
+    // Add the required CSS - this must be done before the head is printed.
     $PAGE->requires->css(new moodle_url('/mod/quivrchat/styles/popup-chat.css'));
 }
 
@@ -195,29 +195,29 @@ function mod_quivrchat_before_standard_html_head() {
 function quivrchat_before_footer() {
     global $PAGE, $COURSE, $DB;
 
-    // Only show the chat button on course pages
+    // Only show the chat button on course pages.
     if ($PAGE->context->contextlevel != CONTEXT_COURSE && $PAGE->context->contextlevel != CONTEXT_MODULE) {
         return;
     }
 
-    // Don't show the button if we're in popup mode
-    // Note: $PAGE->bodyclasses can be either an array or a string depending on the context
-    // We need to check both types to avoid the error: "in_array(): Argument #2 ($haystack) must be of type array, string given"
-    if ($PAGE->pagelayout === 'popup' || 
-        (is_array($PAGE->bodyclasses) && in_array('quivrchat-popup', $PAGE->bodyclasses)) || 
+    // Don't show the button if we're in popup mode.
+    // Note: $PAGE->bodyclasses can be either an array or a string depending on the context.
+    // We need to check both types to avoid the error.
+    if ($PAGE->pagelayout === 'popup' ||
+        (is_array($PAGE->bodyclasses) && in_array('quivrchat-popup', $PAGE->bodyclasses)) ||
         (is_string($PAGE->bodyclasses) && strpos($PAGE->bodyclasses, 'quivrchat-popup') !== false)) {
         return;
     }
 
-    // Get the course ID
+    // Get the course ID.
     $courseid = ($PAGE->context->contextlevel == CONTEXT_COURSE) ? $PAGE->context->instanceid : $COURSE->id;
-    
-    // Skip if we're not in a real course (e.g., site home)
+
+    // Skip if we're not in a real course (e.g., site home).
     if ($courseid <= 1) {
         return;
     }
 
-    // Check if there are any quivrchat instances in this course
+    // Check if there are any quivrchat instances in this course.
     $modinfo = get_fast_modinfo($COURSE);
     $hasquivrchat = false;
 
@@ -230,22 +230,22 @@ function quivrchat_before_footer() {
         }
     }
 
-    // Only show the button if there are quivrchat instances in this course
+    // Only show the button if there are quivrchat instances in this course.
     if (!$hasquivrchat) {
         return;
     }
 
-    // Add the required JavaScript - this can be done before the footer
+    // Add the required JavaScript - this can be done before the footer.
     $PAGE->requires->js(new moodle_url('/mod/quivrchat/js/popup-chat.js'));
 
-    // Output the chat button HTML
+    // Output the chat button HTML.
     echo '<div class="quivrchat-button-container">';
     echo '<button id="quivrchat-open-button" class="quivrchat-open-button">';
     echo '<i class="fa fa-comments"></i> Quivr Chat';
     echo '</button>';
     echo '</div>';
 
-    // Initialize the popup chat JavaScript
+    // Initialize the popup chat JavaScript.
     echo '<script>
         document.addEventListener("DOMContentLoaded", function() {
             if (typeof QuivrChatPopup !== "undefined" && typeof QuivrChatPopup.init === "function") {
