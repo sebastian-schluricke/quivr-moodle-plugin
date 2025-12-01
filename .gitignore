@@ -16,8 +16,12 @@ data/
 Thumbs.db
 
 # Composer dependencies
-vendor/
+/vendor/
 node_modules/
+
+# But keep plugin vendor assets
+!quivrchat/js/vendor/
+!quivrchat/styles/vendor/
 
 # PHP specific
 composer.phar
