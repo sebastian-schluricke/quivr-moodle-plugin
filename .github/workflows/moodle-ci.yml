@@ -50,8 +50,7 @@ jobs:
 
       - name: Create release ZIP
         run: |
-          cd quivrchat
-          zip -r ../quivrchat-${{ steps.get_version.outputs.VERSION }}.zip . -x "*.git*"
+          zip -r quivrchat-${{ steps.get_version.outputs.VERSION }}.zip quivrchat -x "*.git*"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
