@@ -19,7 +19,7 @@
  *
  * @package     mod_quivrchat
  * @category    admin
- * @copyright   2024 ESFL
+ * @copyright   2024 Sebastian Schluricke <schluricke@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

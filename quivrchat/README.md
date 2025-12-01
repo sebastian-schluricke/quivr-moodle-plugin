@@ -1,18 +1,26 @@
 # Quivr Chat - Moodle Activity Plugin
 
-A Moodle activity module that enables students to chat with AI-powered knowledge brains using the Quivr platform.
+A Moodle activity module that enables students to chat with AI-powered knowledge brains using the [Quivr](https://github.com/QuivrHQ/quivr) platform.
+
+## Description
+
+Quivr Chat integrates the Quivr RAG (Retrieval-Augmented Generation) platform into Moodle, allowing educators to create interactive chat experiences powered by custom knowledge bases. Students can ask questions and receive AI-generated responses based on course-specific content that teachers have uploaded to their Quivr brains.
 
 ## Features
 
-- **AI-Powered Chat**: Students can interact with knowledge brains that have been trained on course-specific content
-- **Brain Selection**: Teachers can configure which Quivr brain to use for each activity
+- **AI-Powered Chat**: Students can interact with knowledge brains trained on course-specific content
+- **Brain Selection**: Teachers configure which Quivr brain to use for each activity
 - **Course Popup**: Optional floating chat button on course pages for quick access
-- **Secure Integration**: API key management per teacher profile
+- **Secure Integration**: API key management per teacher profile (never exposed to frontend)
+- **Session Persistence**: Chat history is preserved during the session
+- **Streaming Responses**: Real-time response streaming for better user experience
+- **Markdown Support**: AI responses support formatted text, code blocks, and lists
+- **Multilingual**: Available in English and German
 
 ## Requirements
 
 - Moodle 4.1 or higher (version 2022041900)
-- A running Quivr backend instance
+- A running Quivr backend instance (self-hosted or cloud)
 - Valid API key for the Quivr service
 
 ## Installation
@@ -39,7 +47,7 @@ php admin/cli/upgrade.php
 ### Site-wide settings
 
 1. Go to _Site administration > Plugins > Activity modules > Quivr Chat_
-2. Enter the Quivr API URL (e.g., `https://api.quivr.esfl.io`)
+2. Enter the Quivr API URL (e.g., `http://localhost:5050` or your hosted Quivr instance)
 
 ### Activity settings
 
@@ -50,11 +58,13 @@ When adding a Quivr Chat activity to a course:
 3. Select the brain you want students to chat with
 4. Optionally enable "Use for course popup" for a floating chat button
 
-## Usage
+## Privacy
 
-Students can access the chat through:
-- The activity link in the course
-- The floating popup button (if enabled)
+This plugin sends user questions to an external Quivr API service. Only the question text is transmitted - no usernames, email addresses, or other personal data are sent. See the Privacy API implementation for details.
+
+## Support
+
+For bug reports and feature requests, please use the GitHub issue tracker.
 
 ## License
 

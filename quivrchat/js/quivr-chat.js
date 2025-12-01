@@ -4,6 +4,10 @@
  *
  * Updated to use scoped chat tokens instead of exposing the API key.
  * Now includes Markdown rendering with syntax highlighting.
+ *
+ * @package    mod_quivrchat
+ * @copyright  2024 Sebastian Schluricke <schluricke@gmail.com>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Global reference to the chat instance
@@ -119,9 +123,16 @@ if (document.readyState === 'loading') {
   initializeMarkdownRenderer();
 }
 
-// Initialize the chat when the page loads
-function initQuivrChat(cmid, brainId, quivrApiUrl) {
-  myBrainChatInstance = new QuivrChat(cmid, brainId, quivrApiUrl);
+/**
+ * Initialize the chat when the page loads
+ * @param {number} cmid - Course module ID
+ * @param {string} brainId - Brain ID
+ * @param {string} quivrApiUrl - Quivr API URL
+ * @param {Object} strings - Localized strings from Moodle
+ * @returns {QuivrChat} The chat instance
+ */
+function initQuivrChat(cmid, brainId, quivrApiUrl, strings) {
+  myBrainChatInstance = new QuivrChat(cmid, brainId, quivrApiUrl, strings);
   return myBrainChatInstance;
 }
 
@@ -131,14 +142,27 @@ class QuivrChat {
    * @param {number} cmid - The course module ID
    * @param {string} brainId - The brain ID
    * @param {string} quivrApiUrl - The Quivr API URL
+   * @param {Object} strings - Localized strings from Moodle
    */
-  constructor(cmid, brainId, quivrApiUrl) {
+  constructor(cmid, brainId, quivrApiUrl, strings) {
     this.cmid = cmid;
     this.brainId = brainId;
     this.quivrApiUrl = quivrApiUrl || 'http://localhost:5050';
     this.chatId = null;
     this.questionAmount = 0;
     this.prefixId = 'answer_';
+
+    // Localized strings (with fallbacks for backwards compatibility)
+    this.strings = strings || {
+      connecting: 'Connecting to brain...',
+      chat_restored: 'Chat restored. Ask a question to Quivr Chat.',
+      chat_welcome: 'Welcome! Ask a question to Quivr Chat.',
+      chat_new_started: 'New chat started. Ask a question to Quivr Chat.',
+      error_prefix: 'Error: ',
+      error_unexpected: 'Unexpected response from server.',
+      followup_questions: 'Follow-up questions:',
+      feedback_not_helpful: 'Answer is not helpful!'
+    };
 
     // Token management
     this.chatToken = null;
@@ -152,7 +176,7 @@ class QuivrChat {
    */
   async initializeChat() {
     console.log('QuivrChat Initialize');
-    document.getElementById("chat_input").value = "Stelle Verbindung zum Brain her...";
+    document.getElementById("chat_input").value = this.strings.connecting;
     this.initializeEvents();
 
     // Try to restore chat_id from session
@@ -163,10 +187,10 @@ class QuivrChat {
     let intro_text = document.getElementById("intro-text");
     intro_text.style.display = "block";
     if (this.chatId) {
-      intro_text.textContent = "Chat wird fortgesetzt. Stelle eine Frage an Quivr Chat.";
+      intro_text.textContent = this.strings.chat_restored;
       console.log('Restored chat session:', this.chatId);
     } else {
-      intro_text.textContent = "Willkommen! Stelle eine Frage an Quivr Chat.";
+      intro_text.textContent = this.strings.chat_welcome;
     }
     chat_input.disabled = false;
     chat_input.focus();
@@ -300,7 +324,7 @@ class QuivrChat {
 
     // Update intro text
     const introText = document.getElementById("intro-text");
-    introText.textContent = "Neuer Chat gestartet. Stelle eine Frage an Quivr Chat.";
+    introText.textContent = this.strings.chat_new_started;
 
     // Focus input
     const chatInput = document.getElementById("chat_input");
@@ -558,7 +582,7 @@ class QuivrChat {
       // this.createThumbs();
 
     } catch (error) {
-      this.postAnswer("Fehler: " + error.message);
+      this.postAnswer(this.strings.error_prefix + error.message);
       document.getElementById("quivr-avatar").src = M.cfg.wwwroot + "/mod/quivrchat/pix/avatar.svg";
       let chat_input = document.getElementById("chat_input");
       chat_input.disabled = false;
@@ -659,11 +683,11 @@ class QuivrChat {
         }
         return data.fullMessage;
       } else if (data.error) {
-        this.postAnswer("Fehler: " + data.error);
-        return "Fehler: " + data.error;
+        this.postAnswer(this.strings.error_prefix + data.error);
+        return this.strings.error_prefix + data.error;
       } else {
-        this.postAnswer("Unerwartete Antwort vom Server.");
-        return "Unerwartete Antwort vom Server.";
+        this.postAnswer(this.strings.error_unexpected);
+        return this.strings.error_unexpected;
       }
     }
   }
@@ -738,7 +762,7 @@ class QuivrChat {
 
       let heading = document.createElement('div');
       heading.className = 'followup-heading';
-      heading.textContent = 'Weitere Fragen:';
+      heading.textContent = this.strings.followup_questions;
       followUpContainer.appendChild(heading);
 
       questions.forEach((question, index) => {
@@ -786,7 +810,7 @@ class QuivrChat {
 
       const tooltipContainer = document.createElement('div');
       tooltipContainer.className = 'tooltip-container';
-      tooltipContainer.textContent = 'Antwort ist nicht hilfreich!';
+      tooltipContainer.textContent = this.strings.feedback_not_helpful;
 
       dislikeButton.appendChild(thumbDown);
       imageWrapperContainer.appendChild(dislikeButton);

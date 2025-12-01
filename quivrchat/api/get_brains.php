@@ -1,13 +1,28 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 /**
  * Get available brains from Quivr backend.
  *
  * This endpoint fetches the list of available brains for the current user
  * using the stored API key.
  *
- * @package    mod_quivrchat
- * @copyright  2024 ESFL
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     mod_quivrchat
+ * @copyright   2024 Sebastian Schluricke <schluricke@gmail.com>
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define('AJAX_SCRIPT', true);
@@ -82,9 +97,9 @@ $data = json_decode($response, true);
 // Transform the response to a simpler format
 // API returns {"brains": [...]} so we need to access the brains key
 $brains = [];
-$brainsList = $data['brains'] ?? $data;
-if (is_array($brainsList)) {
-    foreach ($brainsList as $brain) {
+$brainslist = $data['brains'] ?? $data;
+if (is_array($brainslist)) {
+    foreach ($brainslist as $brain) {
         // Skip model entries (brain_type = "model")
         if (isset($brain['brain_type']) && $brain['brain_type'] === 'model') {
             continue;

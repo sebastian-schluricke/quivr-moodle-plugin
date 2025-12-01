@@ -18,7 +18,7 @@
  * The main mod_quivrchat configuration form.
  *
  * @package     mod_quivrchat
- * @copyright   2024 ESFL
+ * @copyright   2024 Sebastian Schluricke <schluricke@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
  * Module instance settings form.
  *
  * @package     mod_quivrchat
- * @copyright   2024 ESFL
+ * @copyright   2024 Sebastian Schluricke <schluricke@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_quivrchat_mod_form extends moodleform_mod {
@@ -233,9 +233,9 @@ class mod_quivrchat_mod_form extends moodleform_mod {
         $brains = [];
 
         // API returns {"brains": [...]} so we need to access the brains key
-        $brainsList = $data['brains'] ?? $data;
-        if (is_array($brainsList)) {
-            foreach ($brainsList as $brain) {
+        $brainslist = $data['brains'] ?? $data;
+        if (is_array($brainslist)) {
+            foreach ($brainslist as $brain) {
                 // Skip model entries (brain_type = "model")
                 if (isset($brain['brain_type']) && $brain['brain_type'] === 'model') {
                     continue;

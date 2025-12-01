@@ -18,7 +18,7 @@
  * API endpoint to get a quivrchat instance for a course
  *
  * @package     mod_quivrchat
- * @copyright   
+ * @copyright   2024 Sebastian Schluricke <schluricke@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -61,36 +61,36 @@ if (!has_capability('moodle/course:view', $coursecontext)) {
 // Find all quivrchat instances in the course
 $modinfo = get_fast_modinfo($course);
 $instances = [];
-$primaryInstance = null;
+$primaryinstance = null;
 
 if (isset($modinfo->instances['quivrchat'])) {
     foreach ($modinfo->instances['quivrchat'] as $cm) {
         if ($cm->uservisible) {
-            // Get the instance data to check use_for_popup
+            // Get the instance data to check use_for_popup.
             $instancedata = $DB->get_record('quivrchat', ['id' => $cm->instance]);
-            $isPrimary = $instancedata && !empty($instancedata->use_for_popup);
+            $isprimary = $instancedata && !empty($instancedata->use_for_popup);
 
             $instance = [
                 'cmid' => $cm->id,
                 'name' => $cm->name,
-                'use_for_popup' => $isPrimary
+                'use_for_popup' => $isprimary,
             ];
 
             $instances[] = $instance;
 
-            // Remember the primary instance
-            if ($isPrimary) {
-                $primaryInstance = $instance;
+            // Remember the primary instance.
+            if ($isprimary) {
+                $primaryinstance = $instance;
             }
         }
     }
 }
 
-// Prefer the primary instance (use_for_popup=1), otherwise return the first available
-if ($primaryInstance) {
+// Prefer the primary instance (use_for_popup=1), otherwise return the first available.
+if ($primaryinstance) {
     $response['success'] = true;
-    $response['cmid'] = $primaryInstance['cmid'];
-    $response['name'] = $primaryInstance['name'];
+    $response['cmid'] = $primaryinstance['cmid'];
+    $response['name'] = $primaryinstance['name'];
     $response['is_primary'] = true;
 } else if (!empty($instances)) {
     $response['success'] = true;

@@ -18,7 +18,7 @@
  * Display information about all the mod_quivrchat modules in the requested course.
  *
  * @package     mod_quivrchat
- * @copyright   
+ * @copyright   2024 Sebastian Schluricke <schluricke@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,12 +33,6 @@ require_course_login($course);
 
 $coursecontext = context_course::instance($course->id);
 
-$event = \mod_quivrchat\event\course_module_instance_list_viewed::create([
-    'context' => $modulecontext,
-]);
-$event->add_record_snapshot('course', $course);
-$event->trigger();
-
 $PAGE->set_url('/mod/quivrchat/index.php', ['id' => $id]);
 $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_heading(format_string($course->fullname));
@@ -52,7 +46,7 @@ echo $OUTPUT->heading($modulenameplural);
 $quivrchats = get_all_instances_in_course('quivrchat', $course);
 
 if (empty($quivrchats)) {
-    notice(get_string('no$quivrchatinstances', 'mod_quivrchat'), new moodle_url('/course/view.php', ['id' => $course->id]));
+    notice(get_string('noquivrchatinstances', 'mod_quivrchat'), new moodle_url('/course/view.php', ['id' => $course->id]));
 }
 
 $table = new html_table();
