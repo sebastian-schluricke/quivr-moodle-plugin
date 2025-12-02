@@ -6,6 +6,32 @@ A Moodle activity module that enables students to chat with AI-powered knowledge
 
 Quivr Chat integrates the Quivr RAG (Retrieval-Augmented Generation) platform into Moodle, allowing educators to create interactive chat experiences powered by custom knowledge bases. Students can ask questions and receive AI-generated responses based on course-specific content that teachers have uploaded to their Quivr brains.
 
+## Pedagogical Value
+
+A key educational benefit of this plugin is that students can ask questions **without fear of judgment**. This shame-free environment encourages learners to seek help on topics they might otherwise hesitate to ask about in class. Teachers gain valuable insights into student questions, helping them better understand the knowledge gaps, skills, and needs of their learners - and can adapt their teaching accordingly.
+
+## Screenshots
+
+### Plugin Settings
+Configure the Quivr API URL in the site administration.
+
+![Plugin Settings](../images/Picture%201%20-%20Plugin%20Settings.png)
+
+### Activity Configuration
+Set up a new Quivr Chat activity with brain selection and popup options.
+
+![Brain Settings](../images/Picture%202%20-%20Brain%20Settings%20-%20New%20Activity.png)
+
+### Chat Interface
+Students interact with the AI-powered knowledge brain directly in the activity.
+
+![Chat in Activity](../images/Picture%203%20-%20Brain%20Chat%20in%20activity.png)
+
+### Course-wide Popup
+Optional floating chat button available on all course pages.
+
+![Popup Chat](../images/Picture%204%20-%20Brain%20Chat%20in%20course%20-%20global.png)
+
 ## Features
 
 - **AI-Powered Chat**: Students can interact with knowledge brains trained on course-specific content
@@ -19,8 +45,8 @@ Quivr Chat integrates the Quivr RAG (Retrieval-Augmented Generation) platform in
 
 ## Requirements
 
-- Moodle 4.1 or higher (version 2022041900)
-- A running Quivr backend instance (self-hosted or cloud)
+- Moodle 4.0 or higher
+- A running [quivr-for-moodle](https://github.com/sebastian-schluricke/quivr-for-moodle) backend instance
 - Valid API key for the Quivr service
 
 ## Installation
