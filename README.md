@@ -17,6 +17,28 @@ This plugin connects Moodle with a [Quivr backend](https://github.com/sebastian-
 - **Session Persistence**: Chat history is preserved during the session
 - **Multilingual**: German and English
 
+## Screenshots
+
+### Plugin Settings
+Configure the Quivr API URL in the site administration.
+
+![Plugin Settings](images/Picture%201%20-%20Plugin%20Settings.png)
+
+### Activity Configuration
+Set up a new Quivr Chat activity with brain selection and popup options.
+
+![Brain Settings](images/Picture%202%20-%20Brain%20Settings%20-%20New%20Activity.png)
+
+### Chat Interface
+Students interact with the AI-powered knowledge brain directly in the activity.
+
+![Chat in Activity](images/Picture%203%20-%20Brain%20Chat%20in%20activity.png)
+
+### Course-wide Popup
+Optional floating chat button available on all course pages.
+
+![Popup Chat](images/Picture%204%20-%20Brain%20Chat%20in%20course%20-%20global.png)
+
 ## Architecture
 
 ```
