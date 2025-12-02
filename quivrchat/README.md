@@ -15,22 +15,22 @@ A key educational benefit of this plugin is that students can ask questions **wi
 ### Plugin Settings
 Configure the Quivr API URL in the site administration.
 
-![Plugin Settings](../images/Picture%201%20-%20Plugin%20Settings.png)
+![Plugin Settings](https://raw.githubusercontent.com/sebastian-schluricke/quivr-moodle-plugin/main/images/Picture%201%20-%20Plugin%20Settings.png)
 
 ### Activity Configuration
 Set up a new Quivr Chat activity with brain selection and popup options.
 
-![Brain Settings](../images/Picture%202%20-%20Brain%20Settings%20-%20New%20Activity.png)
+![Brain Settings](https://raw.githubusercontent.com/sebastian-schluricke/quivr-moodle-plugin/main/images/Picture%202%20-%20Brain%20Settings%20-%20New%20Activity.png)
 
 ### Chat Interface
 Students interact with the AI-powered knowledge brain directly in the activity.
 
-![Chat in Activity](../images/Picture%203%20-%20Brain%20Chat%20in%20activity.png)
+![Chat in Activity](https://raw.githubusercontent.com/sebastian-schluricke/quivr-moodle-plugin/main/images/Picture%203%20-%20Brain%20Chat%20in%20activity.png)
 
 ### Course-wide Popup
 Optional floating chat button available on all course pages.
 
-![Popup Chat](../images/Picture%204%20-%20Brain%20Chat%20in%20course%20-%20global.png)
+![Popup Chat](https://raw.githubusercontent.com/sebastian-schluricke/quivr-moodle-plugin/main/images/Picture%204%20-%20Brain%20Chat%20in%20course%20-%20global.png)
 
 ## Features
 
