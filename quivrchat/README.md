@@ -4,7 +4,7 @@ A Moodle activity module for AI-powered chat using the Quivr RAG platform.
 
 For full documentation, screenshots, and setup instructions, visit the GitHub repository:
 
-**https://github.com/sebastian-schluricke/quivr-moodle-plugin**
+**https://github.com/sebastian-schluricke/moodle-mod_quivrchat**
 
 ## License
 
