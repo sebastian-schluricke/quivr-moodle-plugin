@@ -68,7 +68,7 @@ switch ($method) {
     case 'POST':
         // Store chat_id and/or add message to history.
         $input = json_decode(file_get_contents('php://input'), true);
-        $chatid = $input['chat_id'] ?? null;
+        $chatid = isset($input['chat_id']) ? clean_param($input['chat_id'], PARAM_ALPHANUMEXT) : null;
         $message = $input['message'] ?? null;
 
         // Store chat_id if provided.
@@ -78,7 +78,7 @@ switch ($method) {
                 http_response_code(400);
                 echo json_encode([
                     'success' => false,
-                    'error' => 'Invalid chat_id format',
+                    'error' => get_string('error_invalid_chatid_format', 'mod_quivrchat'),
                 ]);
                 exit;
             }
@@ -96,10 +96,14 @@ switch ($method) {
                 http_response_code(400);
                 echo json_encode([
                     'success' => false,
-                    'error' => 'Invalid message format (need role and content)',
+                    'error' => get_string('error_invalid_message_format', 'mod_quivrchat'),
                 ]);
                 exit;
             }
+
+            // Clean message fields.
+            $role = clean_param($message['role'], PARAM_ALPHA);
+            $content = clean_param($message['content'], PARAM_TEXT);
 
             // Limit history to last 50 messages to prevent session bloat.
             if (count($_SESSION[$sessionkeyhistory]) >= 50) {
@@ -107,8 +111,8 @@ switch ($method) {
             }
 
             $_SESSION[$sessionkeyhistory][] = [
-                'role' => $message['role'],
-                'content' => $message['content'],
+                'role' => $role,
+                'content' => $content,
                 'timestamp' => time(),
             ];
         }
@@ -126,7 +130,7 @@ switch ($method) {
         unset($_SESSION[$sessionkeyhistory]);
         echo json_encode([
             'success' => true,
-            'message' => 'Chat session cleared',
+            'message' => get_string('chat_session_cleared', 'mod_quivrchat'),
         ]);
         break;
 
@@ -134,6 +138,6 @@ switch ($method) {
         http_response_code(405);
         echo json_encode([
             'success' => false,
-            'error' => 'Method not allowed',
+            'error' => get_string('error_method_not_allowed', 'mod_quivrchat'),
         ]);
 }
