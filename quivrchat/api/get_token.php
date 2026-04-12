@@ -54,41 +54,37 @@ if (empty($apiurl)) {
     $apiurl = getenv('QUIVR_API_URL') ?: 'http://localhost:5050';
 }
 
-// Request a scoped chat token from Quivr.
-// Use native PHP curl to avoid Moodle's URL blocking.
-$ch = curl_init("$apiurl/chat/token");
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
+// Request a scoped chat token from Quivr using Moodle's curl wrapper (supports proxy configs).
+$curl = new \curl();
+$curl->setHeader([
     'Authorization: Bearer ' . $apikey,
     'Content-Type: application/json',
 ]);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+
+$postdata = json_encode([
     'brain_id' => $brainid,
     'ttl_minutes' => 10,
-]));
+]);
 
-$response = curl_exec($ch);
-$curlerrno = curl_errno($ch);
-$curlerror = curl_error($ch);
-$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
+$response = $curl->post("$apiurl/chat/token", $postdata);
+$curlerrno = $curl->get_errno();
+$httpcode = $curl->get_info()['http_code'] ?? 0;
 $data = json_decode($response, true);
 
 // Check for errors.
 if ($curlerrno !== 0) {
     http_response_code(500);
     echo json_encode([
-        'error' => 'Failed to connect to Quivr backend',
-        'details' => $curlerror,
+        'error' => get_string('error_connect_backend', 'mod_quivrchat'),
+        'details' => $curl->error,
     ]);
     exit;
 }
 
-if ($httpcode !== 200) {
+if ($httpcode != 200) {
     http_response_code($httpcode);
     echo json_encode([
-        'error' => 'Failed to obtain chat token',
+        'error' => get_string('error_obtain_token', 'mod_quivrchat'),
         'details' => $data['detail'] ?? 'Unknown error',
     ]);
     exit;

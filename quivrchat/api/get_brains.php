@@ -45,7 +45,7 @@ if (empty($apikey)) {
 if (empty($apikey)) {
     echo json_encode([
         'success' => false,
-        'error' => 'No API key available. Please enter an API key first.',
+        'error' => get_string('error_no_apikey', 'mod_quivrchat'),
         'brains' => [],
     ]);
     exit;
@@ -58,35 +58,32 @@ if (empty($apiurl)) {
     $apiurl = getenv('QUIVR_API_URL') ?: 'http://host.docker.internal:5050';
 }
 
-// Request brains from Quivr.
-$ch = curl_init("$apiurl/brains/");
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
+// Request brains from Quivr using Moodle's curl wrapper (supports proxy configs).
+$curl = new \curl();
+$curl->setHeader([
     'Authorization: Bearer ' . $apikey,
     'Content-Type: application/json',
 ]);
 
-$response = curl_exec($ch);
-$curlerrno = curl_errno($ch);
-$curlerror = curl_error($ch);
-$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
+$response = $curl->get("$apiurl/brains/");
+$curlerrno = $curl->get_errno();
+$httpcode = $curl->get_info()['http_code'] ?? 0;
 
 // Check for errors.
 if ($curlerrno !== 0) {
     echo json_encode([
         'success' => false,
-        'error' => 'Failed to connect to Quivr backend: ' . $curlerror,
+        'error' => get_string('error_connect_backend', 'mod_quivrchat') . ': ' . $curl->error,
         'brains' => [],
     ]);
     exit;
 }
 
-if ($httpcode !== 200) {
+if ($httpcode != 200) {
     $data = json_decode($response, true);
     echo json_encode([
         'success' => false,
-        'error' => 'Failed to fetch brains: ' . ($data['detail'] ?? 'HTTP ' . $httpcode),
+        'error' => get_string('error_fetch_brains', 'mod_quivrchat') . ': ' . ($data['detail'] ?? 'HTTP ' . $httpcode),
         'brains' => [],
     ]);
     exit;
