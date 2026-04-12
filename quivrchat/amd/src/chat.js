@@ -11,10 +11,21 @@
  * @copyright  2024 Sebastian Schluricke <schluricke@gmail.com>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define([], function() {
+define(['core/ajax'], function(Ajax) {
 
     /** @type {QuivrChat|null} Module-level reference to the chat instance. */
     var chatInstance = null;
+
+    /**
+     * Call a Moodle External Service.
+     *
+     * @param {string} methodname The service name (e.g. 'mod_quivrchat_get_token').
+     * @param {Object} args Arguments for the service call.
+     * @returns {Promise} Resolves with the service response.
+     */
+    function callService(methodname, args) {
+        return Ajax.call([{methodname: methodname, args: args}])[0];
+    }
 
     /**
      * Configure marked.js for Markdown rendering.
@@ -158,8 +169,7 @@ define([], function() {
 
     QuivrChat.prototype._loadChatIdFromSession = async function() {
         try {
-            var response = await fetch(M.cfg.wwwroot + '/mod/quivrchat/api/session_chat.php?cmid=' + this.cmid);
-            var data = await response.json();
+            var data = await callService('mod_quivrchat_get_session', {cmid: this.cmid});
             if (data.success) {
                 if (data.chat_id) {
                     this.chatId = data.chat_id;
@@ -201,11 +211,7 @@ define([], function() {
             return;
         }
         try {
-            await fetch(M.cfg.wwwroot + '/mod/quivrchat/api/session_chat.php?cmid=' + this.cmid, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({chat_id: this.chatId})
-            });
+            await callService('mod_quivrchat_save_session', {cmid: this.cmid, chatid: this.chatId});
         } catch (error) {
             window.console.warn('Could not save chat_id to session:', error);
         }
@@ -213,10 +219,10 @@ define([], function() {
 
     QuivrChat.prototype._saveMessageToSession = async function(role, content) {
         try {
-            await fetch(M.cfg.wwwroot + '/mod/quivrchat/api/session_chat.php?cmid=' + this.cmid, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: {role: role, content: content}})
+            await callService('mod_quivrchat_save_session', {
+                cmid: this.cmid,
+                messagerole: role,
+                messagecontent: content
             });
         } catch (error) {
             window.console.warn('Could not save message to session:', error);
@@ -225,9 +231,7 @@ define([], function() {
 
     QuivrChat.prototype.startNewChat = async function() {
         try {
-            await fetch(M.cfg.wwwroot + '/mod/quivrchat/api/session_chat.php?cmid=' + this.cmid, {
-                method: 'DELETE'
-            });
+            await callService('mod_quivrchat_clear_session', {cmid: this.cmid});
         } catch (error) {
             window.console.warn('Could not clear session:', error);
         }
@@ -289,10 +293,9 @@ define([], function() {
         if (this.chatToken && this.tokenExpiresAt && (this.tokenExpiresAt - bufferMs) > now) {
             return this.chatToken;
         }
-        var response = await fetch(M.cfg.wwwroot + '/mod/quivrchat/api/get_token.php?cmid=' + this.cmid);
-        var data = await response.json();
-        if (!response.ok || !data.success) {
-            throw new Error(data.error || 'Failed to get chat token');
+        var data = await callService('mod_quivrchat_get_token', {cmid: this.cmid});
+        if (!data.success) {
+            throw new Error('Failed to get chat token');
         }
         this.chatToken = data.token;
         this.tokenExpiresAt = new Date(data.expires_at).getTime();

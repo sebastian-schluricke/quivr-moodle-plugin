@@ -8,7 +8,7 @@
  * @copyright  2024 Sebastian Schluricke <schluricke@gmail.com>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define([], function() {
+define(['core/ajax'], function(Ajax) {
 
     /** @type {Object} Localized strings (injected by hook_callbacks.php). */
     var strings = {
@@ -66,33 +66,31 @@ define([], function() {
     function openChatPopup(courseId) {
         var baseUrl = M.cfg.wwwroot;
 
-        fetch(baseUrl + '/mod/quivrchat/api/get_instance.php?courseid=' + courseId)
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(data) {
-                if (data.success && data.cmid) {
-                    var modalOverlay = document.getElementById('quivrchat-modal-overlay');
-                    var modalContent = document.getElementById('quivrchat-modal-content');
+        Ajax.call([{
+            methodname: 'mod_quivrchat_get_instance',
+            args: {courseid: courseId}
+        }])[0].then(function(data) {
+            if (data.success && data.cmid) {
+                var modalOverlay = document.getElementById('quivrchat-modal-overlay');
+                var modalContent = document.getElementById('quivrchat-modal-content');
 
-                    if (!modalOverlay || !modalContent) {
-                        window.console.error('Modal elements not found');
-                        window.alert(strings.error_opening_chat);
-                        return;
-                    }
-
-                    var chatUrl = baseUrl + '/mod/quivrchat/view.php?id=' + data.cmid + '&popup=1';
-                    modalContent.src = chatUrl;
-                    showModal();
-                } else {
-                    window.console.error('No quivrchat instance found for this course');
-                    window.alert(strings.error_no_chat_available);
+                if (!modalOverlay || !modalContent) {
+                    window.console.error('Modal elements not found');
+                    window.alert(strings.error_opening_chat);
+                    return;
                 }
-            })
-            .catch(function(error) {
-                window.console.error('Error fetching quivrchat instance:', error);
-                window.alert(strings.error_loading_chat);
-            });
+
+                var chatUrl = baseUrl + '/mod/quivrchat/view.php?id=' + data.cmid + '&popup=1';
+                modalContent.src = chatUrl;
+                showModal();
+            } else {
+                window.console.error('No quivrchat instance found for this course');
+                window.alert(strings.error_no_chat_available);
+            }
+        }).catch(function(error) {
+            window.console.error('Error fetching quivrchat instance:', error);
+            window.alert(strings.error_loading_chat);
+        });
     }
 
     /**
