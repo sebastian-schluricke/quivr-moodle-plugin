@@ -62,7 +62,7 @@ class get_session extends external_api {
         return [
             'success' => true,
             'chat_id' => isset($_SESSION[$sessionkeychatid]) ? $_SESSION[$sessionkeychatid] : '',
-            'history' => isset($_SESSION[$sessionkeyhistory]) ? array_map(function($msg) {
+            'history' => isset($_SESSION[$sessionkeyhistory]) ? array_map(function ($msg) {
                 return [
                     'role' => $msg['role'] ?? '',
                     'content' => $msg['content'] ?? '',

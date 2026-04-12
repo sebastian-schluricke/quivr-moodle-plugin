@@ -52,8 +52,12 @@ class save_session extends external_api {
      * @param string $messagecontent Message content.
      * @return array
      */
-    public static function execute(int $cmid, string $chatid = '', string $messagerole = '',
-            string $messagecontent = ''): array {
+    public static function execute(
+        int $cmid,
+        string $chatid = '',
+        string $messagerole = '',
+        string $messagecontent = ''
+    ): array {
         $params = self::validate_parameters(self::execute_parameters(), [
             'cmid' => $cmid,
             'chatid' => $chatid,
