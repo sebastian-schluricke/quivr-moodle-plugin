@@ -75,13 +75,10 @@ $jsstrings = [
 $PAGE->requires->css(new moodle_url('/mod/quivrchat/styles/quivr-chat.css'));
 $PAGE->requires->css(new moodle_url('/mod/quivrchat/styles/vendor/highlight-github.css'));
 
-// Add vendor JS libraries (loaded before main chat script).
+// Add vendor JS libraries (loaded in head, before AMD modules).
 $PAGE->requires->js(new moodle_url('/mod/quivrchat/js/vendor/marked.min.js'), true);
 $PAGE->requires->js(new moodle_url('/mod/quivrchat/js/vendor/purify.min.js'), true);
 $PAGE->requires->js(new moodle_url('/mod/quivrchat/js/vendor/highlight.min.js'), true);
-
-// Main chat script.
-$PAGE->requires->js(new moodle_url('/mod/quivrchat/js/quivr-chat.js'));
 
 // Popup-specific adjustments.
 if ($popup) {
@@ -102,26 +99,14 @@ $templatecontext = [
     'send_url' => $CFG->wwwroot . '/mod/quivrchat/pix/send.svg',
 ];
 
-// JavaScript initialization code.
-$jsinit = 'document.addEventListener("DOMContentLoaded", function() {' .
-    'if (typeof initQuivrChat === "function") {' .
-    '  initQuivrChat(' .
-        json_encode($cm->id) . ', ' .
-        json_encode($brainid) . ', ' .
-        json_encode($quivrapiurl) . ', ' .
-        json_encode($jsstrings) . ', ' .
-        json_encode($custominstructions) .
-    ');' .
-    '  var newChatBtn = document.getElementById("new_chat_btn");' .
-    '  if (newChatBtn) {' .
-    '    newChatBtn.addEventListener("click", function() {' .
-    '      if (myBrainChatInstance) { myBrainChatInstance.startNewChat(); }' .
-    '    });' .
-    '  }' .
-    '} else { console.error("Quivr Chat script not loaded properly"); }' .
-    '});';
-
-$PAGE->requires->js_init_code($jsinit);
+// Initialize chat via AMD module.
+$PAGE->requires->js_call_amd('mod_quivrchat/chat', 'init', [
+    $cm->id,
+    $brainid,
+    $quivrapiurl,
+    $jsstrings,
+    $custominstructions,
+]);
 
 // Render page.
 echo $OUTPUT->header();

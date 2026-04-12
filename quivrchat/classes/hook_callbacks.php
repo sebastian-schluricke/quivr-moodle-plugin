@@ -122,30 +122,23 @@ class hook_callbacks {
             return;
         }
 
-        // Add the required JavaScript.
-        $PAGE->requires->js(new \moodle_url('/mod/quivrchat/js/popup-chat.js'));
-
         // Build the chat button HTML (returned via hook, not echoed).
         $buttonlabel = get_string('popup_button_label', 'mod_quivrchat');
-        $popupstrings = json_encode([
-            'error_opening_chat' => get_string('error_opening_chat', 'mod_quivrchat'),
-            'error_no_chat_available' => get_string('error_no_chat_available', 'mod_quivrchat'),
-            'error_loading_chat' => get_string('error_loading_chat', 'mod_quivrchat'),
-        ]);
 
         $html = '<div class="quivrchat-button-container">';
         $html .= '<button id="quivrchat-open-button" class="quivrchat-open-button">';
         $html .= '<i class="fa fa-comments"></i> ' . $buttonlabel;
         $html .= '</button>';
         $html .= '</div>';
-        $html .= '<script>';
-        $html .= 'document.addEventListener("DOMContentLoaded", function() {';
-        $html .= '    if (typeof QuivrChatPopup !== "undefined" && typeof QuivrChatPopup.init === "function") {';
-        $html .= '        QuivrChatPopup.init(' . $courseid . ', ' . $popupstrings . ');';
-        $html .= '    }';
-        $html .= '});';
-        $html .= '</script>';
 
         $hook->add_html($html);
+
+        // Initialize popup via AMD module (no inline script needed).
+        $popupstrings = [
+            'error_opening_chat' => get_string('error_opening_chat', 'mod_quivrchat'),
+            'error_no_chat_available' => get_string('error_no_chat_available', 'mod_quivrchat'),
+            'error_loading_chat' => get_string('error_loading_chat', 'mod_quivrchat'),
+        ];
+        $PAGE->requires->js_call_amd('mod_quivrchat/popup', 'init', [$courseid, $popupstrings]);
     }
 }
