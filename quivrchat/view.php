@@ -51,6 +51,7 @@ $PAGE->set_context($context);
 // Get instance data.
 $instance = $DB->get_record('quivrchat', ['id' => $cm->instance], '*', MUST_EXIST);
 $brainid = $instance->brainid;
+$custominstructions = $instance->custom_instructions ?? '';
 // Note: API key is NOT exposed to frontend - it's only used server-side in get_token.php.
 
 // Get Quivr API URL from plugin settings.
@@ -95,7 +96,6 @@ if ($popup) {
 
 // Output start.
 echo $OUTPUT->header();
-echo $OUTPUT->heading(format_string($instance->name));
 
 // Get localized UI strings.
 $strconnecting = get_string('connecting', 'mod_quivrchat');
@@ -108,8 +108,13 @@ $strsend = get_string('send', 'mod_quivrchat');
 // Chat UI HTML.
 $cmid = $cm->id;
 $stringsjson = json_encode($strings);
+$custominstructionsjson = json_encode($custominstructions);
+
+$headinghtml = $OUTPUT->heading(format_string($instance->name));
 
 echo <<<HTML
+<div class="mod_quivrchat">
+{$headinghtml}
 <div id="background-container" class="background-container">
   <div class="chat-container">
     <div class="chat-header">
@@ -141,6 +146,7 @@ echo <<<HTML
     </div>
   </div>
 </div>
+</div>
 
 <script>
 // Initialize variables for the chat
@@ -148,12 +154,13 @@ const cmid = {$cmid};
 const brainId = "{$brainid}";
 const quivrApiUrl = "{$quivrapiurl}";
 const quivrChatStrings = {$stringsjson};
+const customInstructions = {$custominstructionsjson};
 
 document.addEventListener("DOMContentLoaded", function() {
   // The initialization will be handled by the quivr-chat.js file
   if (typeof initQuivrChat === 'function') {
     // Note: API key is no longer passed to frontend - tokens are fetched server-side
-    initQuivrChat(cmid, brainId, quivrApiUrl, quivrChatStrings);
+    initQuivrChat(cmid, brainId, quivrApiUrl, quivrChatStrings, customInstructions);
 
     // Add event listener for "New Chat" button
     const newChatBtn = document.getElementById('new_chat_btn');

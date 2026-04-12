@@ -60,6 +60,24 @@ $string['brainsloaded'] = 'Brains erfolgreich geladen';
 $string['nobrainsfound'] = 'Keine Brains gefunden. Bitte prüfen Sie Ihren API-Schlüssel.';
 $string['errorloadingbrains'] = 'Fehler beim Laden der Brains';
 
+// Instruktions-Einstellungen.
+$string['instructionssettings'] = 'Instruktions-Einstellungen';
+$string['custom_instructions'] = 'Eigene Instruktionen';
+$string['custom_instructions_help'] = 'Eigene Instruktionen, die mit jeder Chat-Nachricht gesendet werden, um die KI-Antworten für diese Aktivität zu steuern. Diese Instruktionen überschreiben die Standardeinstellungen des Brains. Nutzen Sie dies, um das Verhalten der KI für verschiedene Anwendungsfälle anzupassen (z.B. Quiz-Modus, Fragen & Antworten, Erläuterungen). Lassen Sie das Feld leer, um die Standard-Instruktionen des Brains zu verwenden.';
+
+// Beispiel-Prompts.
+$string['example_prompts_label'] = 'Klicken Sie auf ein Beispiel, um es als Vorlage einzufügen:';
+$string['example_socratic_label'] = 'Sokratischer Tutor';
+$string['example_socratic'] = 'Gib niemals die direkte Lösung. Stelle stattdessen gezielte Rückfragen, die den Schüler selbst zum Ergebnis führen. Erst wenn der Schüler dreimal nach der Lösung gefragt hat, gib sie preis – und zwar mit vollständigem Rechenweg.';
+$string['example_quiz_label'] = 'Quiz-Modus';
+$string['example_quiz'] = 'Du bist ein Quizmaster. Stelle immer zuerst eine Frage zum Thema, bevor du Inhalte erklärst. Gib niemals mehr als eine Frage pro Antwort. Bewerte die Antwort des Schülers und stelle dann die nächste Frage.';
+$string['example_simple_label'] = 'Einfache Sprache';
+$string['example_simple'] = 'Erkläre alles so, wie du es einem Grundschüler der 4. Klasse erklären würdest. Verwende nur kurze Sätze (max. 12 Wörter) und konkrete Alltagsbeispiele. Keine Fachbegriffe ohne Erklärung.';
+$string['example_math_label'] = 'Mathe-Tutor';
+$string['example_math'] = 'Du bist Mathe-Tutor. Formatiere alle Gleichungen mit AsciiMath in Backticks (z.B. `x^2 + 2x - 3 = 0`). Bei Aufgaben zeige immer drei Dinge in dieser Reihenfolge: (1) die Formel, (2) die Schritte, (3) das Ergebnis. Runde niemals – gib Brüche exakt an.';
+$string['example_short_label'] = 'Kurzantworten';
+$string['example_short'] = 'Antworte in maximal 3 Sätzen. Verwende keine Listen und keine Überschriften. Wenn die Antwort länger werden müsste, frage stattdessen: „Welcher Teil interessiert dich am meisten?"';
+
 // Popup-Einstellungen.
 $string['popupsettings'] = 'Popup-Einstellungen';
 $string['use_for_popup'] = 'Für Kurs-Popup verwenden';
@@ -80,6 +98,27 @@ $string['followup_questions'] = 'Weitere Fragen:';
 $string['feedback_not_helpful'] = 'Antwort ist nicht hilfreich!';
 $string['send'] = 'Senden';
 $string['avatar_alt'] = 'Chat-Avatar';
+
+// Popup-Chat.
+$string['popup_button_label'] = 'Quivr Chat';
+$string['error_opening_chat'] = 'Fehler beim Öffnen des Chats.';
+$string['error_no_chat_available'] = 'Kein Chat für diesen Kurs verfügbar.';
+$string['error_loading_chat'] = 'Fehler beim Laden des Chats.';
+
+// API-Fehlermeldungen.
+$string['error_chat_creation_failed'] = 'Chat konnte nicht erstellt werden';
+$string['error_no_response'] = 'Keine Antwort.';
+$string['error_course_not_found'] = 'Kurs nicht gefunden';
+$string['error_access_denied'] = 'Zugriff verweigert';
+$string['error_no_instances_in_course'] = 'Keine Quivr Chat Aktivitäten in diesem Kurs gefunden';
+$string['error_invalid_chatid_format'] = 'Ungültiges Chat-ID-Format';
+$string['error_invalid_message_format'] = 'Ungültiges Nachrichtenformat (role und content erforderlich)';
+$string['error_method_not_allowed'] = 'Methode nicht erlaubt';
+$string['chat_session_cleared'] = 'Chat-Sitzung gelöscht';
+$string['error_no_apikey'] = 'Kein API-Schlüssel verfügbar. Bitte geben Sie zuerst einen API-Schlüssel ein.';
+$string['error_connect_backend'] = 'Verbindung zum Quivr-Backend fehlgeschlagen';
+$string['error_fetch_brains'] = 'Fehler beim Laden der Brains';
+$string['error_obtain_token'] = 'Chat-Token konnte nicht bezogen werden';
 
 // Privacy API.
 $string['privacy:metadata'] = 'Das Quivr Chat Plugin sendet Benutzerfragen an einen externen Quivr API-Dienst für KI-gestützte Antworten. Es werden keine personenbezogenen Daten übertragen.';

@@ -60,6 +60,45 @@ $string['brainsloaded'] = 'Brains loaded successfully';
 $string['nobrainsfound'] = 'No brains found. Please check your API key.';
 $string['errorloadingbrains'] = 'Error loading brains';
 
+// Instructions settings.
+$string['instructionssettings'] = 'Instructions Settings';
+$string['custom_instructions'] = 'Custom Instructions';
+$string['custom_instructions_help'] = 'Custom instructions that will be sent with each chat message to guide the AI\'s responses for this activity. These instructions override the brain\'s default prompt settings. Use this to customize the AI\'s behavior for different use cases (e.g., quiz mode, Q&A, explanations). Leave empty to use the brain\'s default instructions.';
+
+// Example prompts.
+$string['example_prompts_label'] = 'Click an example to use it as a template:';
+$string['example_socratic_label'] = 'Socratic Tutor';
+$string['example_socratic'] = 'Never give the direct solution. Instead, ask targeted counter-questions that guide the student to find the answer themselves. Only reveal the solution after the student has asked for it three times — and then include the full step-by-step solution.';
+$string['example_quiz_label'] = 'Quiz Mode';
+$string['example_quiz'] = 'You are a quiz master. Always ask a question about the topic first before explaining content. Never give more than one question per answer. Evaluate the student\'s answer and then ask the next question.';
+$string['example_simple_label'] = 'Simple Language';
+$string['example_simple'] = 'Explain everything as if you were talking to a 4th grader. Use only short sentences (max. 12 words) and concrete everyday examples. No technical terms without explanation.';
+$string['example_math_label'] = 'Math Tutor';
+$string['example_math'] = 'You are a math tutor. Format all equations using AsciiMath in backticks (e.g. `x^2 + 2x - 3 = 0`). For every problem, always show three things in this order: (1) the formula, (2) the steps, (3) the result. Never round — give exact fractions.';
+$string['example_short_label'] = 'Short Answers';
+$string['example_short'] = 'Answer in a maximum of 3 sentences. Do not use lists or headings. If the answer would need to be longer, ask instead: "Which part interests you the most?"';
+
+// Popup chat.
+$string['popup_button_label'] = 'Quivr Chat';
+$string['error_opening_chat'] = 'Error opening chat.';
+$string['error_no_chat_available'] = 'No chat available for this course.';
+$string['error_loading_chat'] = 'Error loading chat.';
+
+// API error messages.
+$string['error_chat_creation_failed'] = 'Chat creation failed';
+$string['error_no_response'] = 'No response.';
+$string['error_course_not_found'] = 'Course not found';
+$string['error_access_denied'] = 'Access denied';
+$string['error_no_instances_in_course'] = 'No quivrchat instances found in this course';
+$string['error_invalid_chatid_format'] = 'Invalid chat_id format';
+$string['error_invalid_message_format'] = 'Invalid message format (need role and content)';
+$string['error_method_not_allowed'] = 'Method not allowed';
+$string['chat_session_cleared'] = 'Chat session cleared';
+$string['error_no_apikey'] = 'No API key available. Please enter an API key first.';
+$string['error_connect_backend'] = 'Failed to connect to Quivr backend';
+$string['error_fetch_brains'] = 'Failed to fetch brains';
+$string['error_obtain_token'] = 'Failed to obtain chat token';
+
 // Popup settings.
 $string['popupsettings'] = 'Popup Settings';
 $string['use_for_popup'] = 'Use for course popup';

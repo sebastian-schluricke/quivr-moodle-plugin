@@ -50,5 +50,20 @@ function xmldb_quivrchat_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2025112802, 'quivrchat');
     }
 
+    // Add custom_instructions field.
+    if ($oldversion < 2026020200) {
+        // Define field custom_instructions to be added to quivrchat.
+        $table = new xmldb_table('quivrchat');
+        $field = new xmldb_field('custom_instructions', XMLDB_TYPE_TEXT, null, null, null, null, null, 'use_for_popup');
+
+        // Conditionally launch add field custom_instructions.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Quivrchat savepoint reached.
+        upgrade_mod_savepoint(true, 2026020200, 'quivrchat');
+    }
+
     return true;
 }

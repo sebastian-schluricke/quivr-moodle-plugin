@@ -129,10 +129,11 @@ if (document.readyState === 'loading') {
  * @param {string} brainId - Brain ID
  * @param {string} quivrApiUrl - Quivr API URL
  * @param {Object} strings - Localized strings from Moodle
+ * @param {string} customInstructions - Custom instructions for this activity (optional)
  * @returns {QuivrChat} The chat instance
  */
-function initQuivrChat(cmid, brainId, quivrApiUrl, strings) {
-  myBrainChatInstance = new QuivrChat(cmid, brainId, quivrApiUrl, strings);
+function initQuivrChat(cmid, brainId, quivrApiUrl, strings, customInstructions) {
+  myBrainChatInstance = new QuivrChat(cmid, brainId, quivrApiUrl, strings, customInstructions);
   return myBrainChatInstance;
 }
 
@@ -143,14 +144,18 @@ class QuivrChat {
    * @param {string} brainId - The brain ID
    * @param {string} quivrApiUrl - The Quivr API URL
    * @param {Object} strings - Localized strings from Moodle
+   * @param {string} customInstructions - Custom instructions for this activity (optional)
    */
-  constructor(cmid, brainId, quivrApiUrl, strings) {
+  constructor(cmid, brainId, quivrApiUrl, strings, customInstructions) {
     this.cmid = cmid;
     this.brainId = brainId;
     this.quivrApiUrl = quivrApiUrl || 'http://localhost:5050';
     this.chatId = null;
     this.questionAmount = 0;
     this.prefixId = 'answer_';
+
+    // Custom instructions for this activity (overrides brain-level prompt)
+    this.customInstructions = customInstructions || null;
 
     // Localized strings (with fallbacks for backwards compatibility)
     this.strings = strings || {
@@ -521,15 +526,19 @@ class QuivrChat {
       }
 
       // Step 2: Ask the question
+      // Build request body with optional custom_instructions
+      const requestBody = { question: question };
+      if (this.customInstructions) {
+        requestBody.custom_instructions = this.customInstructions;
+      }
+
       const response = await fetch(`${this.quivrApiUrl}/chat/${this.chatId}/question/stream?brain_id=${this.brainId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          question: question
-        })
+        body: JSON.stringify(requestBody)
       });
 
       let finalAnswer = '';
@@ -549,9 +558,7 @@ class QuivrChat {
               'Authorization': `Bearer ${newToken}`,
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-              question: question
-            })
+            body: JSON.stringify(requestBody)
           });
 
           if (!retryResponse.ok) {

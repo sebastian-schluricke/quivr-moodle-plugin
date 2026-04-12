@@ -129,6 +129,50 @@ class mod_quivrchat_mod_form extends moodleform_mod {
         // Status message area.
         $mform->addElement('static', 'brains_status', '', '<div id="brains_status"></div>');
 
+        // Custom instructions textarea.
+        $mform->addElement('header', 'instructionssettings', get_string('instructionssettings', 'mod_quivrchat'));
+
+        $mform->addElement(
+            'textarea',
+            'custom_instructions',
+            get_string('custom_instructions', 'mod_quivrchat'),
+            ['rows' => 6, 'cols' => 60, 'id' => 'id_custom_instructions']
+        );
+        $mform->setType('custom_instructions', PARAM_RAW);
+        $mform->addHelpButton('custom_instructions', 'custom_instructions', 'mod_quivrchat');
+
+        // Example prompts as clickable buttons.
+        $examplelabel = get_string('example_prompts_label', 'mod_quivrchat');
+        $examples = [
+            get_string('example_socratic', 'mod_quivrchat'),
+            get_string('example_quiz', 'mod_quivrchat'),
+            get_string('example_simple', 'mod_quivrchat'),
+            get_string('example_math', 'mod_quivrchat'),
+            get_string('example_short', 'mod_quivrchat'),
+        ];
+        $examplelabels = [
+            get_string('example_socratic_label', 'mod_quivrchat'),
+            get_string('example_quiz_label', 'mod_quivrchat'),
+            get_string('example_simple_label', 'mod_quivrchat'),
+            get_string('example_math_label', 'mod_quivrchat'),
+            get_string('example_short_label', 'mod_quivrchat'),
+        ];
+
+        $buttonshtml = '<div class="quivrchat-example-prompts">';
+        $buttonshtml .= '<small class="text-muted d-block mb-2">' . $examplelabel . '</small>';
+        foreach ($examples as $i => $example) {
+            $escaped = htmlspecialchars($example, ENT_QUOTES, 'UTF-8');
+            $label = htmlspecialchars($examplelabels[$i], ENT_QUOTES, 'UTF-8');
+            $buttonshtml .= '<button type="button" class="btn btn-outline-secondary btn-sm mr-1 mb-1" '
+                . 'onclick="document.getElementById(\'id_custom_instructions\').value=\''
+                . str_replace(["'", "\n"], ["\\'", "\\n"], $escaped)
+                . '\'; document.getElementById(\'id_custom_instructions\').focus();"'
+                . '>' . $label . '</button>';
+        }
+        $buttonshtml .= '</div>';
+
+        $mform->addElement('static', 'example_prompts', '', $buttonshtml);
+
         // Popup settings header.
         $mform->addElement('header', 'popupsettings', get_string('popupsettings', 'mod_quivrchat'));
 
@@ -220,20 +264,20 @@ class mod_quivrchat_mod_form extends moodleform_mod {
             $apiurl = getenv('QUIVR_API_URL') ?: 'http://host.docker.internal:5050';
         }
 
-        // Fetch brains.
-        $ch = curl_init("$apiurl/brains/");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        // Fetch brains using Moodle's curl wrapper (supports proxy configs).
+        $curl = new \curl();
+        $curl->setopt([
+            'CURLOPT_TIMEOUT' => 10,
+        ]);
+        $curl->setHeader([
             'Authorization: Bearer ' . $apikey,
             'Content-Type: application/json',
         ]);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
-        $response = curl_exec($ch);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        $response = $curl->get("$apiurl/brains/");
+        $httpcode = $curl->get_info()['http_code'] ?? 0;
 
-        if ($httpcode !== 200) {
+        if ($httpcode != 200) {
             return [];
         }
 
@@ -289,10 +333,10 @@ class mod_quivrchat_mod_form extends moodleform_mod {
 
         // Check if brain is selected.
         // Note: brainid might be empty in $data if options were loaded via AJAX.
-        // In that case, check $_POST directly as fallback.
+        // In that case, use optional_param() as fallback.
         $brainid = $data['brainid'] ?? '';
-        if (empty($brainid) && !empty($_POST['brainid'])) {
-            $brainid = $_POST['brainid'];
+        if (empty($brainid)) {
+            $brainid = optional_param('brainid', '', PARAM_ALPHANUMEXT);
         }
 
         if (empty($brainid)) {
@@ -313,9 +357,9 @@ class mod_quivrchat_mod_form extends moodleform_mod {
         if ($data !== null) {
             // If brainid is empty but was submitted via POST, use that value.
             // This happens when options are loaded dynamically via AJAX.
-            if (empty($data->brainid) && !empty($_POST['brainid'])) {
+            if (empty($data->brainid)) {
+                $brainid = optional_param('brainid', '', PARAM_ALPHANUMEXT);
                 // Validate it's a valid UUID format.
-                $brainid = $_POST['brainid'];
                 if (preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $brainid)) {
                     $data->brainid = $brainid;
                 }

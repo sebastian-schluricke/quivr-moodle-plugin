@@ -16,6 +16,7 @@
         <FIELD NAME="brainid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The Quivr Brain ID used for this activity."/>
         <FIELD NAME="apikey" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="The API key used to access the Quivr brain."/>
         <FIELD NAME="use_for_popup" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether this instance should be used for the course popup chat."/>
+        <FIELD NAME="custom_instructions" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Custom instructions for this activity that override brain-level prompts."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
