@@ -1,0 +1,80 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_quivrchat/view
+
+    Template for the Quivr Chat activity view.
+
+    Context variables required:
+    * heading - The rendered activity heading HTML
+    * str_connecting - Localized "connecting" string
+    * str_newchat - Localized "new chat" button label
+    * str_newchat_title - Localized "new chat" button title
+    * str_placeholder - Localized input placeholder
+    * str_avatar_alt - Localized avatar alt text
+    * str_send - Localized send button alt text
+    * avatar_url - URL to the avatar SVG
+    * send_url - URL to the send button SVG
+
+    Example context (json):
+    {
+        "heading": "<h2>My Chat</h2>",
+        "str_connecting": "Connecting...",
+        "str_newchat": "New Chat",
+        "str_newchat_title": "Start a new chat",
+        "str_placeholder": "What would you like to know?",
+        "str_avatar_alt": "Chat avatar",
+        "str_send": "Send",
+        "avatar_url": "/mod/quivrchat/pix/avatar.svg",
+        "send_url": "/mod/quivrchat/pix/send.svg"
+    }
+}}
+<div class="mod_quivrchat">
+    {{{heading}}}
+    <div id="background-container" class="background-container">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2 id="intro-text" class="intro-text">{{str_connecting}}</h2>
+                <button id="new_chat_btn" class="new-chat-btn" title="{{str_newchat_title}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    {{str_newchat}}
+                </button>
+            </div>
+
+            <div id="chat_history" class="chat-history">
+                {{! Chat messages will be inserted here by JavaScript }}
+            </div>
+
+            <div class="chat-input-container">
+                <div class="chat-input-wrapper">
+                    <img id="quivr-avatar" src="{{avatar_url}}"
+                         class="chat-avatar" alt="{{str_avatar_alt}}">
+                    <input type="text" id="chat_input" class="chat-input"
+                           placeholder="{{str_placeholder}}" maxlength="500" disabled>
+                    <button id="confirm_chat_input" class="chat-send-btn">
+                        <img src="{{send_url}}" alt="{{str_send}}">
+                    </button>
+                </div>
+                <div class="input-counter" id="input_counter">0/500</div>
+            </div>
+        </div>
+    </div>
+</div>
