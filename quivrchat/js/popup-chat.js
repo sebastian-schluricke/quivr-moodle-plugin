@@ -3,8 +3,18 @@
  * This script handles opening the chat in a modal dialog
  */
 
+// Localized strings (injected by lib.php).
+let popupStrings = {
+    error_opening_chat: 'Error opening chat.',
+    error_no_chat_available: 'No chat available for this course.',
+    error_loading_chat: 'Error loading chat.',
+};
+
 // Initialize the popup chat functionality when the page loads
-function initPopupChat(courseId) {
+function initPopupChat(courseId, strings) {
+    if (strings) {
+        popupStrings = Object.assign(popupStrings, strings);
+    }
     console.log('Initializing popup chat for course: ' + courseId);
     
     // Create the modal dialog HTML structure
@@ -87,7 +97,7 @@ function openChatPopup(courseId) {
                 
                 if (!modalOverlay || !modalContent) {
                     console.error('Modal elements not found');
-                    alert('Fehler beim Öffnen des Chats.');
+                    alert(popupStrings.error_opening_chat);
                     return;
                 }
                 
@@ -99,12 +109,12 @@ function openChatPopup(courseId) {
                 showModal();
             } else {
                 console.error('No quivrchat instance found for this course');
-                alert('Kein Chat für diesen Kurs verfügbar.');
+                alert(popupStrings.error_no_chat_available);
             }
         })
         .catch(error => {
             console.error('Error fetching quivrchat instance:', error);
-            alert('Fehler beim Laden des Chats.');
+            alert(popupStrings.error_loading_chat);
         });
 }
 

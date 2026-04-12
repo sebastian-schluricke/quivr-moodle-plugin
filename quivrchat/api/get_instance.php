@@ -45,7 +45,7 @@ $response = [
 // Check if course exists.
 $course = $DB->get_record('course', ['id' => $courseid], '*', IGNORE_MISSING);
 if (!$course) {
-    $response['message'] = 'Course not found';
+    $response['message'] = get_string('error_course_not_found', 'mod_quivrchat');
     echo json_encode($response);
     die();
 }
@@ -53,7 +53,7 @@ if (!$course) {
 // Check if user has access to the course.
 $coursecontext = context_course::instance($courseid);
 if (!has_capability('moodle/course:view', $coursecontext)) {
-    $response['message'] = 'Access denied';
+    $response['message'] = get_string('error_access_denied', 'mod_quivrchat');
     echo json_encode($response);
     die();
 }
@@ -98,7 +98,7 @@ if ($primaryinstance) {
     $response['name'] = $instances[0]['name'];
     $response['is_primary'] = false;
 } else {
-    $response['message'] = 'No quivrchat instances found in this course';
+    $response['message'] = get_string('error_no_instances_in_course', 'mod_quivrchat');
 }
 
 // Output JSON response.

@@ -252,16 +252,22 @@ function quivrchat_before_footer() {
 
     // Output the chat button HTML.
     echo '<div class="quivrchat-button-container">';
+    $buttonlabel = get_string('popup_button_label', 'mod_quivrchat');
     echo '<button id="quivrchat-open-button" class="quivrchat-open-button">';
-    echo '<i class="fa fa-comments"></i> Quivr Chat';
+    echo '<i class="fa fa-comments"></i> ' . $buttonlabel;
     echo '</button>';
     echo '</div>';
 
-    // Initialize the popup chat JavaScript.
+    // Pass localized strings to JavaScript and initialize the popup chat.
+    $popupstrings = json_encode([
+        'error_opening_chat' => get_string('error_opening_chat', 'mod_quivrchat'),
+        'error_no_chat_available' => get_string('error_no_chat_available', 'mod_quivrchat'),
+        'error_loading_chat' => get_string('error_loading_chat', 'mod_quivrchat'),
+    ]);
     echo '<script>
         document.addEventListener("DOMContentLoaded", function() {
             if (typeof QuivrChatPopup !== "undefined" && typeof QuivrChatPopup.init === "function") {
-                QuivrChatPopup.init(' . $courseid . ');
+                QuivrChatPopup.init(' . $courseid . ', ' . $popupstrings . ');
             }
         });
     </script>';

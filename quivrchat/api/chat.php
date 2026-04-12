@@ -57,7 +57,7 @@ $chat = curl_post_json(
 
 if (!isset($chat['chat_id'])) {
     http_response_code(500);
-    echo json_encode(['error' => 'Chat creation failed']);
+    echo json_encode(['error' => get_string('error_chat_creation_failed', 'mod_quivrchat')]);
     exit;
 }
 
@@ -70,7 +70,7 @@ $reply = curl_post_json(
     $apikey
 );
 
-echo json_encode(['answer' => $reply['fullMessage'] ?? 'No response.']);
+echo json_encode(['answer' => $reply['fullMessage'] ?? get_string('error_no_response', 'mod_quivrchat')]);
 
 
 /**
