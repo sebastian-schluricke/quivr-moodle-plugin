@@ -1,37 +1,41 @@
 /**
  * Quivr Chat-style CSS for quivrchat plugin
+ * All selectors are scoped under .mod_quivrchat to prevent conflicts
+ * with Moodle core or other plugins.
  */
 
-/* Main heading (Quivr Chat / Quivr Chat) */
-#region-main > h2, 
-body.quivrchat-popup > #page > #page-content > #region-main-box > #region-main > h2,
-body.quivrchat-popup > div[role="main"] > h2,
-div[role="main"] > h2 {
+/* Override Moodle's page-content padding only in popup mode */
+body.quivrchat-popup #page-content {
+  padding-bottom: 0 !important;
+}
+
+/* Activity heading inside wrapper */
+.mod_quivrchat > h2 {
   padding-left: 1rem;
   padding-top: 1rem;
 }
 
 /* Ensure the intro-text h2 inside chat-header is not affected */
-.chat-header .intro-text {
+.mod_quivrchat .chat-header .intro-text {
   padding-left: 0;
   padding-top: 0;
 }
 
-/* Main container */
-.background-container {
+/* Main container — viewport-responsive height */
+.mod_quivrchat .background-container {
   position: relative;
-  /*min-height: 600px;*/
   background-color: #f5f5f5;
   background-size: cover;
   background-position: center;
   border-radius: 10px;
   overflow: hidden;
-  margin: 20px 0;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 200px);
+  min-height: 300px;
 }
 
-/* Chat container */
-.chat-container {
+/* Chat container — fills background-container, flex column layout */
+.mod_quivrchat .chat-container {
   position: relative;
   width: 100%;
   height: 100%;
@@ -42,8 +46,8 @@ div[role="main"] > h2 {
   overflow: hidden;
 }
 
-/* Chat header */
-.chat-header {
+/* Chat header — never shrinks */
+.mod_quivrchat .chat-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -51,20 +55,21 @@ div[role="main"] > h2 {
   background-color: #3a5795;
   color: white;
   border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
 }
 
-.intro-text {
+.mod_quivrchat .intro-text {
   margin: 0;
   font-size: 1.2rem;
   font-weight: 500;
 }
 
-.chat-controls {
+.mod_quivrchat .chat-controls {
   display: flex;
   gap: 10px;
 }
 
-.chat-close-btn {
+.mod_quivrchat .chat-close-btn {
   background: none;
   border: none;
   color: white;
@@ -75,12 +80,12 @@ div[role="main"] > h2 {
   transition: background-color 0.3s;
 }
 
-.chat-close-btn:hover {
+.mod_quivrchat .chat-close-btn:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* New Chat button */
-.new-chat-btn {
+.mod_quivrchat .new-chat-btn {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -95,30 +100,30 @@ div[role="main"] > h2 {
   white-space: nowrap;
 }
 
-.new-chat-btn:hover {
+.mod_quivrchat .new-chat-btn:hover {
   background-color: rgba(255, 255, 255, 0.25);
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-.new-chat-btn:active {
+.mod_quivrchat .new-chat-btn:active {
   background-color: rgba(255, 255, 255, 0.35);
 }
 
-.new-chat-btn svg {
+.mod_quivrchat .new-chat-btn svg {
   flex-shrink: 0;
 }
 
-/* Chat history */
-.chat-history {
-  flex: 1;
+/* Chat history — fills remaining space, scrolls internally */
+.mod_quivrchat .chat-history {
+  flex: 1 1 0;
   padding: 20px;
   overflow-y: auto;
-  max-height: 400px;
+  min-height: 0;
   background-color: rgba(255, 255, 255, 0.8);
 }
 
 /* User message containers */
-.displayUser-container {
+.mod_quivrchat .displayUser-container {
   margin-bottom: 15px;
   padding: 10px 15px;
   border-radius: 10px;
@@ -127,44 +132,45 @@ div[role="main"] > h2 {
   position: relative;
 }
 
-.right-container {
+.mod_quivrchat .right-container {
   background-color: #e6f7ff;
   margin-left: auto;
   border-bottom-right-radius: 0;
   text-align: right;
 }
 
-.left-container {
+.mod_quivrchat .left-container {
   background-color: #f0f0f0;
   margin-right: auto;
   border-bottom-left-radius: 0;
   text-align: left;
 }
 
-/* Chat input container */
-.chat-input-container {
-  padding: 15px;
+/* Chat input container — never shrinks, always visible */
+.mod_quivrchat .chat-input-container {
+  padding: 15px 15px 10px;
   background-color: white;
   border-top: 1px solid #ddd;
   min-height: 50px;
-  flex-shrink: 0; /* Prevent container from shrinking during resize */
-  position: relative; /* Added for absolute positioning of child elements */
+  flex-shrink: 0;
+  position: relative;
 }
 
-.chat-input-wrapper {
+.mod_quivrchat .chat-input-wrapper {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding-bottom: 8px;
 }
 
-.chat-avatar {
+.mod_quivrchat .chat-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.chat-input {
+.mod_quivrchat .chat-input {
   flex: 1;
   padding: 10px 15px;
   border: 1px solid #ddd;
@@ -174,11 +180,11 @@ div[role="main"] > h2 {
   transition: border-color 0.3s;
 }
 
-.chat-input:focus {
+.mod_quivrchat .chat-input:focus {
   border-color: #3a5795;
 }
 
-.chat-send-btn {
+.mod_quivrchat .chat-send-btn {
   background-color: #3a5795;
   color: white;
   border: none;
@@ -193,33 +199,32 @@ div[role="main"] > h2 {
   transition: background-color 0.3s;
 }
 
-.chat-send-btn img {
-  transform: translateX(-2px); /* ggf. auch -2px je nach Icon */
+.mod_quivrchat .chat-send-btn img {
+  transform: translateX(-2px);
 }
 
-.chat-send-btn:hover {
+.mod_quivrchat .chat-send-btn:hover {
   background-color: #2a4785;
 }
 
-.input-counter {
+.mod_quivrchat .input-counter {
   position: absolute;
   text-align: center;
   font-size: 0.8rem;
   color: #777;
-  right: 15px; /* Align with the right padding of container */
-  top: 55px; /* Position below the send button (15px padding + 40px button height) */
-  width: 40px; /* Same width as the send button */
+  right: 15px;
+  top: 55px;
+  width: 40px;
 }
 
-/* Responsive adjustments for the input counter */
 @media (max-width: 768px) {
-  .input-counter {
-    right: 10px; /* Adjust for smaller padding on mobile */
+  .mod_quivrchat .input-counter {
+    right: 10px;
   }
 }
 
 /* Confirmation dialog */
-.confirm-box {
+.mod_quivrchat .confirm-box {
   position: absolute;
   top: 0;
   left: 0;
@@ -232,7 +237,7 @@ div[role="main"] > h2 {
   z-index: 1000;
 }
 
-.confirm-content {
+.mod_quivrchat .confirm-content {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
@@ -240,14 +245,15 @@ div[role="main"] > h2 {
   max-width: 300px;
 }
 
-.confirm-buttons {
+.mod_quivrchat .confirm-buttons {
   display: flex;
   justify-content: center;
   gap: 20px;
   margin-top: 20px;
 }
 
-.confirm-yes, .confirm-no {
+.mod_quivrchat .confirm-yes,
+.mod_quivrchat .confirm-no {
   padding: 8px 20px;
   border: none;
   border-radius: 5px;
@@ -255,53 +261,53 @@ div[role="main"] > h2 {
   transition: background-color 0.3s;
 }
 
-.confirm-yes {
+.mod_quivrchat .confirm-yes {
   background-color: #d9534f;
   color: white;
 }
 
-.confirm-yes:hover {
+.mod_quivrchat .confirm-yes:hover {
   background-color: #c9302c;
 }
 
-.confirm-no {
+.mod_quivrchat .confirm-no {
   background-color: #5bc0de;
   color: white;
 }
 
-.confirm-no:hover {
+.mod_quivrchat .confirm-no:hover {
   background-color: #46b8da;
 }
 
 /* Feedback container */
-.feedback-container {
+.mod_quivrchat .feedback-container {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
 }
 
-.image-wrapper-container {
+.mod_quivrchat .image-wrapper-container {
   position: relative;
   display: inline-block;
 }
 
-.dislike-button {
+.mod_quivrchat .dislike-button {
   cursor: pointer;
   padding: 5px;
   border-radius: 50%;
   transition: background-color 0.3s;
 }
 
-.dislike-button:hover {
+.mod_quivrchat .dislike-button:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.thumb-down {
+.mod_quivrchat .thumb-down {
   width: 20px;
   height: 20px;
 }
 
-.tooltip-container {
+.mod_quivrchat .tooltip-container {
   position: absolute;
   bottom: 100%;
   left: 50%;
@@ -317,26 +323,26 @@ div[role="main"] > h2 {
   transition: opacity 0.3s, visibility 0.3s;
 }
 
-.image-wrapper-container:hover .tooltip-container {
+.mod_quivrchat .image-wrapper-container:hover .tooltip-container {
   opacity: 1;
   visibility: visible;
 }
 
 /* Follow-up questions styling */
-.followup-questions-container {
+.mod_quivrchat .followup-questions-container {
   margin-top: 15px;
   padding-top: 10px;
   border-top: 1px solid #ddd;
 }
 
-.followup-heading {
+.mod_quivrchat .followup-heading {
   font-size: 0.9rem;
   font-weight: 600;
   color: #555;
   margin-bottom: 8px;
 }
 
-.followup-question-button {
+.mod_quivrchat .followup-question-button {
   display: inline-block;
   margin: 4px 4px 4px 0;
   padding: 6px 12px;
@@ -350,12 +356,12 @@ div[role="main"] > h2 {
   text-align: left;
 }
 
-.followup-question-button:hover {
+.mod_quivrchat .followup-question-button:hover {
   background-color: #e0eeff;
   border-color: #3a5795;
 }
 
-.followup-question-button:active {
+.mod_quivrchat .followup-question-button:active {
   background-color: #d0e5ff;
   transform: scale(0.98);
 }
@@ -364,75 +370,72 @@ div[role="main"] > h2 {
    Markdown Content Styling
    ============================================ */
 
-.markdown-content {
+.mod_quivrchat .markdown-content {
   line-height: 1.6;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
-/* Paragraphs */
-.markdown-content p {
+.mod_quivrchat .markdown-content p {
   margin: 0 0 0.75em 0;
 }
 
-.markdown-content p:last-child {
+.mod_quivrchat .markdown-content p:last-child {
   margin-bottom: 0;
 }
 
-/* Headings */
-.markdown-content h1,
-.markdown-content h2,
-.markdown-content h3,
-.markdown-content h4,
-.markdown-content h5,
-.markdown-content h6 {
+.mod_quivrchat .markdown-content h1,
+.mod_quivrchat .markdown-content h2,
+.mod_quivrchat .markdown-content h3,
+.mod_quivrchat .markdown-content h4,
+.mod_quivrchat .markdown-content h5,
+.mod_quivrchat .markdown-content h6 {
   margin: 1em 0 0.5em 0;
   font-weight: 600;
   line-height: 1.3;
 }
 
-.markdown-content h1:first-child,
-.markdown-content h2:first-child,
-.markdown-content h3:first-child {
+.mod_quivrchat .markdown-content h1:first-child,
+.mod_quivrchat .markdown-content h2:first-child,
+.mod_quivrchat .markdown-content h3:first-child {
   margin-top: 0;
 }
 
-.markdown-content h1 { font-size: 1.4em; }
-.markdown-content h2 { font-size: 1.25em; }
-.markdown-content h3 { font-size: 1.1em; }
-.markdown-content h4 { font-size: 1em; }
+.mod_quivrchat .markdown-content h1 { font-size: 1.4em; }
+.mod_quivrchat .markdown-content h2 { font-size: 1.25em; }
+.mod_quivrchat .markdown-content h3 { font-size: 1.1em; }
+.mod_quivrchat .markdown-content h4 { font-size: 1em; }
 
-/* Lists */
-.markdown-content ul,
-.markdown-content ol {
+.mod_quivrchat .markdown-content ul,
+.mod_quivrchat .markdown-content ol {
   margin: 0.5em 0;
   padding-left: 1.5em;
 }
 
-.markdown-content li {
+.mod_quivrchat .markdown-content li {
   margin: 0.25em 0;
 }
 
-.markdown-content ul {
+.mod_quivrchat .markdown-content ul {
   list-style-type: disc;
 }
 
-.markdown-content ol {
+.mod_quivrchat .markdown-content ol {
   list-style-type: decimal;
 }
 
-.markdown-content ul ul,
-.markdown-content ol ul {
+.mod_quivrchat .markdown-content ul ul,
+.mod_quivrchat .markdown-content ol ul {
   list-style-type: circle;
 }
 
-.markdown-content ul ul ul,
-.markdown-content ol ol ul {
+.mod_quivrchat .markdown-content ul ul ul,
+.mod_quivrchat .markdown-content ol ol ul {
   list-style-type: square;
 }
 
 /* Code - Inline */
-.markdown-content code {
+.mod_quivrchat .markdown-content code {
   background-color: rgba(0, 0, 0, 0.06);
   padding: 0.15em 0.4em;
   border-radius: 4px;
@@ -442,7 +445,7 @@ div[role="main"] > h2 {
 }
 
 /* Code - Blocks */
-.markdown-content pre {
+.mod_quivrchat .markdown-content pre {
   background-color: #1e1e1e;
   color: #d4d4d4;
   padding: 1em;
@@ -453,7 +456,7 @@ div[role="main"] > h2 {
   line-height: 1.5;
 }
 
-.markdown-content pre code {
+.mod_quivrchat .markdown-content pre code {
   background-color: transparent;
   padding: 0;
   border-radius: 0;
@@ -463,31 +466,31 @@ div[role="main"] > h2 {
 }
 
 /* Tables */
-.markdown-content table {
+.mod_quivrchat .markdown-content table {
   border-collapse: collapse;
   width: 100%;
   margin: 0.75em 0;
   font-size: 0.9em;
 }
 
-.markdown-content th,
-.markdown-content td {
+.mod_quivrchat .markdown-content th,
+.mod_quivrchat .markdown-content td {
   border: 1px solid #ddd;
   padding: 0.5em 0.75em;
   text-align: left;
 }
 
-.markdown-content th {
+.mod_quivrchat .markdown-content th {
   background-color: #f5f5f5;
   font-weight: 600;
 }
 
-.markdown-content tr:nth-child(even) {
+.mod_quivrchat .markdown-content tr:nth-child(even) {
   background-color: #fafafa;
 }
 
 /* Blockquotes */
-.markdown-content blockquote {
+.mod_quivrchat .markdown-content blockquote {
   margin: 0.75em 0;
   padding: 0.5em 1em;
   border-left: 4px solid #3a5795;
@@ -495,50 +498,50 @@ div[role="main"] > h2 {
   color: #555;
 }
 
-.markdown-content blockquote p {
+.mod_quivrchat .markdown-content blockquote p {
   margin: 0;
 }
 
 /* Links */
-.markdown-content a {
+.mod_quivrchat .markdown-content a {
   color: #3a5795;
   text-decoration: none;
 }
 
-.markdown-content a:hover {
+.mod_quivrchat .markdown-content a:hover {
   text-decoration: underline;
 }
 
 /* Horizontal Rule */
-.markdown-content hr {
+.mod_quivrchat .markdown-content hr {
   border: none;
   border-top: 1px solid #ddd;
   margin: 1em 0;
 }
 
 /* Strong and Emphasis */
-.markdown-content strong {
+.mod_quivrchat .markdown-content strong {
   font-weight: 600;
 }
 
-.markdown-content em {
+.mod_quivrchat .markdown-content em {
   font-style: italic;
 }
 
 /* Images */
-.markdown-content img {
+.mod_quivrchat .markdown-content img {
   max-width: 100%;
   height: auto;
   border-radius: 4px;
 }
 
-/* Task Lists (GitHub style) */
-.markdown-content input[type="checkbox"] {
+/* Task Lists */
+.mod_quivrchat .markdown-content input[type="checkbox"] {
   margin-right: 0.5em;
 }
 
 /* Strikethrough */
-.markdown-content del {
+.mod_quivrchat .markdown-content del {
   text-decoration: line-through;
   color: #888;
 }
@@ -547,16 +550,15 @@ div[role="main"] > h2 {
    Highlight.js Overrides for Chat Context
    ============================================ */
 
-.markdown-content .hljs {
+.mod_quivrchat .markdown-content .hljs {
   background: transparent;
   padding: 0;
 }
 
-/* Ensure code blocks in dark theme have proper contrast */
-.left-container .markdown-content pre {
+.mod_quivrchat .left-container .markdown-content pre {
   background-color: #2d2d2d;
 }
 
-.left-container .markdown-content code:not(pre code) {
+.mod_quivrchat .left-container .markdown-content code:not(pre code) {
   background-color: rgba(0, 0, 0, 0.08);
 }
