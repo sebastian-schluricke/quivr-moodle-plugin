@@ -38,6 +38,13 @@ $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($coursecontext);
 
+// Trigger instance list viewed event.
+$event = \mod_quivrchat\event\course_module_instance_list_viewed::create([
+    'context' => $coursecontext,
+]);
+$event->add_record_snapshot('course', $course);
+$event->trigger();
+
 echo $OUTPUT->header();
 
 $modulenameplural = get_string('modulenameplural', 'mod_quivrchat');
