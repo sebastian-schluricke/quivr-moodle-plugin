@@ -56,13 +56,17 @@ Optional floating chat button available on all course pages.
 ## Architecture
 
 ```
-Browser (AMD Modules)
-  |
-  |--- Ajax.call() ---> Moodle Backend (External Services) ---> Quivr API
-  |                     [token, brains, session]                [API Key]
-  |
-  |--- fetch() -------> Quivr API (direct, streaming)
-                         [Scoped Token from step above]
+  Moodle External Services           Direct Streaming
+  (token, brains, session)              (SSE, chat)
+           |                                |
+           v                                v
++------------------+   Ajax.call()   +------------------+   fetch()   +------------------+
+|                  | <-------------> |                  | <---------> |                  |
+|  Moodle Frontend |                 |  Moodle Backend  |   API Key   |  Quivr Backend   |
+|  (AMD Modules)   |                 |  (PHP External   |             |  (Python/FastAPI) |
+|                  |   Scoped Token  |   Services)      |             |                  |
++------------------+ - - - - - - - - +------------------+             +------------------+
+                     (direct to Quivr for streaming)
 ```
 
 ### Hybrid Architecture
