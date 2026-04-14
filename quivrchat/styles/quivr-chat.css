@@ -9,6 +9,15 @@ body.quivrchat-popup #page-content {
   padding-bottom: 0 !important;
 }
 
+/* Theme-agnostic: some Moodle themes (e.g. custom themes on 2nd-moodle)
+   add `#region-main { padding: 0 15px 15px }`, which pushes our chat
+   container sideways and adds a bottom gap. Neutralise it on any page
+   that hosts a quivrchat activity. */
+body.path-mod-quivrchat #region-main,
+body.path-mod-quivrchat #region-main-box {
+  padding: 0 !important;
+}
+
 /* Activity heading inside wrapper */
 .mod_quivrchat > h2 {
   padding-left: 1rem;
@@ -30,8 +39,11 @@ body.quivrchat-popup #page-content {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  height: calc(100vh - 200px);
-  min-height: 300px;
+  /* Fixed predictable height that works on any Moodle theme.
+     Slim viewports get a smaller chat; large ones get a bounded one. */
+  height: 70vh;
+  min-height: 400px;
+  max-height: 700px;
 }
 
 /* Chat container — fills background-container, flex column layout */

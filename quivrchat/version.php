@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_quivrchat';
-$plugin->release = '1.1.0';
-$plugin->version = 2026041200;
+$plugin->release = '1.1.1';
+$plugin->version = 2026041400;
 $plugin->requires = 2022041900;
 $plugin->maturity = MATURITY_STABLE;
